@@ -1,0 +1,3 @@
+counter$=example.Incrementer 4
+
+hello ${counter}, hello ${counter}

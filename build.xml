@@ -1,0 +1,53 @@
+<project name="sitegrinder" default="dist" basedir=".">
+	<property name="project.name" value="${ant.project.name}"/>
+	
+	<property name="root.classes" value="org.stringtree.grinder.SiteGrinder"/>
+	<property name="main.class" value="org.stringtree.grinder.SiteGrinder"/>
+
+	<path id="classpath">
+	    <fileset dir="lib/">
+	    	<include name="*.jar"/>
+	    </fileset>
+		<pathelement path="antbin"/>
+		<pathelement path="../stringtree/bin"/>
+		<pathelement path="${java.class.path}"/>
+	</path>
+	
+	<target name="clean">
+		<delete>
+			<fileset dir="antbin" includes="**/*.class" />
+		</delete>
+	</target>
+
+	<target name='build' depends='clean'>
+		<javac srcdir="src/main/java" destdir="antbin" debug="on">
+			<classpath refid="classpath"/>
+		</javac>
+	  	<copy todir="antbin" overwrite="true" flatten="false" filtering="false" failonerror="false">
+	   	  <fileset dir="src/main/resources"/>
+	  	</copy>
+	</target>
+  	
+	<target name="dist" depends="build">
+	    <taskdef name="pack" 
+	      classname="org.sadun.util.ant.Pack" classpath="lib/pack.jar" />
+	    <pack 
+	      classes = "${root.classes}"
+	      targetJar = "dist/${project.name}.jar"
+	      manifestMainClass = "${main.class}"
+	      excludePkg = "java,sun"
+	      includePkg = "com,org,javax"
+	    >
+			<classpath refid="classpath"/>
+	    	<additionalfileset dir="src/main/resources/"/>
+	    </pack>
+		<copy file="dist/${project.name}.jar" todir="../_repository"/>
+	</target>
+	
+	<target name="backup">
+	 	<tstamp/>
+  		<zip destfile="../backup/${project.name}-${DSTAMP}-${TSTAMP}.zip">
+  	  		<fileset dir="." excludes="bin/**,dist/**,antbin/**"/>
+  		</zip>
+	</target>
+</project>
