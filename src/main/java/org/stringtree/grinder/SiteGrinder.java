@@ -29,6 +29,11 @@ import org.stringtree.util.tree.TreeWalker;
 public class SiteGrinder {
 	public static final String TYPE = "~type";
 	public static final String FILE = "~file";
+
+	public static final String TYPE_TEMPLATE = "template";
+	public static final String TYPE_FOLDER = "folder";
+	public static final String TYPE_BINARY = "binary";
+	
 	private static final FilenameEndsWithDotTractRecognizer TRACT_RECOGNISER = new FilenameEndsWithDotTractRecognizer();
 	private static PrintStream log = System.out; 
 	
@@ -100,7 +105,7 @@ public class SiteGrinder {
 			
 			if (file.isDirectory()) {
 				load(file, child, context);
-				tract.put(TYPE, "folder");
+				tract.put(TYPE, TYPE_FOLDER);
 				
 			} else if (name.endsWith(".tpl") || name.endsWith(".tract")) {
 				try {
@@ -108,9 +113,9 @@ public class SiteGrinder {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				tract.put(TYPE, "template");
+				tract.put(TYPE, TYPE_TEMPLATE);
 			} else {
-				tract.put(TYPE, "binary");
+				tract.put(TYPE, TYPE_BINARY);
 			}
 
 			child.setValue(tract);

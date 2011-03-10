@@ -27,13 +27,13 @@ public class StringFileWritingTreeVisitor implements TreeVisitor<Tract> {
 		Tract page = node.getValue();
 		String type = page.get(SiteGrinder.TYPE);
 		String name = page.get(Tract.NAME);
-		if ("binary".equals(type)) {
+		if (SiteGrinder.TYPE_BINARY.equals(type)) {
 			copy((File)page.getObject(SiteGrinder.FILE), new File(current.peek(), name));
-		} else if ("folder".equals(type)) {
+		} else if (SiteGrinder.TYPE_FOLDER.equals(type)) {
 			File file = new File(current.peek(), name);
 			file.mkdirs();
 			current.push(file);
-		} else if ("template".equals(type)) {
+		} else if (SiteGrinder.TYPE_TEMPLATE.equals(type)) {
 			try {
 				if (StringUtils.isBlank(name)) {
 					name = page.getContent();
@@ -52,7 +52,7 @@ public class StringFileWritingTreeVisitor implements TreeVisitor<Tract> {
 	public void exit(Tree<Tract> node) {
 		Tract page = node.getValue();
 		String type = page.get(SiteGrinder.TYPE);
-		if ("folder".equals(type)) current.pop();
+		if (SiteGrinder.TYPE_FOLDER.equals(type)) current.pop();
 	}
 	
     private void copy(File source, File dest) {
