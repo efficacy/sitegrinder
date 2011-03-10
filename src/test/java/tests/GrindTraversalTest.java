@@ -65,17 +65,19 @@ public class GrindTraversalTest extends TestCase {
 		assertTrue(site.isEmpty());
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void testSingleSimplePage() {
 		pages.setValue(new MapTract("brasspyramid.com"));
 		pages.addChild(new SimpleTree<Tract>(new MapTract("hello")));
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
 		assertEquals("brasspyramid.com", site.getValue().getContent());
-		assertTrue(Checklist.compareCollection(new Tree[] { 
+		assertTrue(new Checklist<Tree<Tract>>(
 				new SimpleTree<Tract>(new MapTract("hello")) 
-			}, site.getChildren()));
+			).check(site.getChildren()));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void testMultipleSimplePage() {
 		pages.setValue(new MapTract("brasspyramid.com"));
 		pages.addChild(new SimpleTree<Tract>(new MapTract("hello")));
@@ -83,12 +85,13 @@ public class GrindTraversalTest extends TestCase {
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
 		assertEquals("brasspyramid.com", site.getValue().getContent());
-		assertTrue(Checklist.compareCollection(new Tree[] { 
+		assertTrue(new Checklist<Tree<Tract>>(
 				new SimpleTree<Tract>(new MapTract("hello")), 
 				new SimpleTree<Tract>(new MapTract("goodbye")) 
-			}, site.getChildren()));
+			).check(site.getChildren()));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void testHierarchy() {
 		pages.setValue(new MapTract("brasspyramid.com"));
 		MutableTree<Tract> child = new SimpleTree<Tract>(new MapTract("hello"));
@@ -97,9 +100,9 @@ public class GrindTraversalTest extends TestCase {
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
 		assertEquals("brasspyramid.com", site.getValue().getContent());
-		assertTrue(Checklist.compareCollection(new Tree[] { 
+		assertTrue(new Checklist<Tree<Tract>>(
 				new SimpleTree<Tract>(new MapTract("hello"), children("goodbye")) 
-			}, site.getChildren()));
+		).check(site.getChildren()));
 	}
 
 	private Collection<Tree<Tract>> children(String... strings) {
