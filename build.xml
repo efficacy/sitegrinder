@@ -9,7 +9,7 @@
 	    	<include name="*.jar"/>
 	    </fileset>
 		<pathelement path="antbin"/>
-		<pathelement path="../stringtree/bin"/>
+		<pathelement path="../stringtree/target/classes"/>
 		<pathelement path="${java.class.path}"/>
 	</path>
 	
