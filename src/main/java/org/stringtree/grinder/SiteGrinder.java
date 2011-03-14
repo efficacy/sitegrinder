@@ -29,6 +29,7 @@ import org.stringtree.util.tree.TreeWalker;
 public class SiteGrinder {
 	public static final String TYPE = "~type";
 	public static final String FILE = "~file";
+	public static final String PARENT = "~parent";
 
 	public static final String TYPE_TEMPLATE = "template";
 	public static final String TYPE_FOLDER = "folder";
@@ -45,6 +46,7 @@ public class SiteGrinder {
 		String src = args[0];
 		String dest = args[1];
 		SiteGrinder grinder = new SiteGrinder();
+System.err.println("about to grind");
 		grinder.grind(new File(src), new File(dest));
 	}
 
@@ -84,15 +86,16 @@ public class SiteGrinder {
 			}
 			
 		MutableTree<Tract> site = new SimpleTree<Tract>();
-		load(srcdir, pages, context);
+		load(srcdir, pages, "", context);
 		grind(pages, templates, site, context);
 		save(destdir, site);
 	}
 
-	public void load(File srcdir, MutableTree<Tract> pages, StringKeeper context) {
+	public void load(File srcdir, MutableTree<Tract> pages, String parent, StringKeeper context) {
 		pages.setValue(new MapTract(srcdir.getName()));
 		File[] files = srcdir.listFiles();
 		for (File file : files) {
+System.err.println("loading file " + file.getAbsolutePath());
 			String name = file.getName();
 			if (name.startsWith(".") || name.startsWith("_")) {
 				continue;
@@ -101,10 +104,11 @@ public class SiteGrinder {
 			MutableTree<Tract> child = new SimpleTree<Tract>();
 			Tract tract = new MapTract();
 			tract.put(Tract.NAME, name);
+			tract.put(PARENT, parent);
 			tract.put(FILE, file);
 			
 			if (file.isDirectory()) {
-				load(file, child, context);
+				load(file, child, parent + "/" + name, context);
 				tract.put(TYPE, TYPE_FOLDER);
 				
 			} else if (name.endsWith(".tpl") || name.endsWith(".tract")) {
@@ -121,6 +125,10 @@ public class SiteGrinder {
 			child.setValue(tract);
 			pages.addChild(child);
 		}
+	}
+
+	public void load(File srcdir, MutableTree<Tract> pages, StringKeeper context) {
+		load(srcdir, pages, "", context);
 	}
 	
 	public void save(File destdir, MutableTree<Tract> site) {

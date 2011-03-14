@@ -1,5 +1,9 @@
 package org.stringtree.grinder;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.stringtree.Tract;
 import org.stringtree.fetcher.FallbackFetcher;
 import org.stringtree.finder.FetcherStringFinder;
@@ -7,9 +11,8 @@ import org.stringtree.finder.StringFinder;
 import org.stringtree.finder.StringKeeper;
 import org.stringtree.finder.TractFinder;
 import org.stringtree.template.ByteArrayStringCollector;
-import org.stringtree.template.EasyTemplater;
 import org.stringtree.template.StringCollector;
-import org.stringtree.template.Templater;
+import org.stringtree.template.TreeTemplater;
 import org.stringtree.tract.MapTract;
 import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.Tree;
@@ -18,31 +21,39 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tra
 	public static final String PAGE_PROLOGUE = "page_prologue";
 	public static final String PAGE_EPILOGUE = "page_epilogue";
 	
-	Templater templater;
+	TreeTemplater templater;
 	TractFinder templates;
 	StringKeeper context;
 
 	public TemplateTreeTransformVisitor(TractFinder templates, StringKeeper context) {
 		this.templates = templates;
 		this.context = context;
-		this.templater = new EasyTemplater(templates);
+		this.templater = new TreeTemplater(templates);
+	}
+	
+	private void addIfNotNull(Collection<Object> collection, Object item) {
+		if (null != item) collection.add(item);
 	}
 	
 	protected boolean visit(Tree<Tract> from, MutableTree<Tract> to) {
+System.err.println("visit from=" + from);
 		Tract page = from.getValue();
 		if (null == page) return false;
 
+		List<Object> combined = new ArrayList<Object>();
+		addIfNotNull(combined, templates.getObject(PAGE_PROLOGUE));
+		addIfNotNull(combined, templater.applyPrologueEpilogue(page.get(SiteGrinder.PARENT), page));
+		addIfNotNull(combined, templates.getObject(PAGE_EPILOGUE));
+System.err.println("combined=" + combined);
+		
 		StringCollector collector = new ByteArrayStringCollector();
-		StringFinder pageContext = new FetcherStringFinder(new FallbackFetcher(page, context));
-		Tract prologue = (Tract) templates.getObject(PAGE_PROLOGUE);
-		if (null != prologue) {
-			templater.expandTemplate(pageContext, prologue, collector);
-		}
-		templater.expandTemplate(context, page, collector);
-		Tract epilogue = (Tract) templates.getObject(PAGE_EPILOGUE);
-		if (null != epilogue) {
-			templater.expand(pageContext, PAGE_EPILOGUE, collector);
-		}
+//		StringFinder pageContext = new FetcherStringFinder(new FallbackFetcher(page, context));
+//		templater.expandTemplate(context, page, collector);
+//		Tract epilogue = (Tract) templates.getObject(PAGE_EPILOGUE);
+//		if (null != epilogue) {
+//			templater.expand(pageContext, PAGE_EPILOGUE, collector);
+//		}
+		templater.expandTemplate(context, combined, collector);
 		Tract ret = new MapTract(collector.toString());
 		
 		String oldname = page.get(Tract.NAME);
