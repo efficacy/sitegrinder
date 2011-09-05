@@ -14,7 +14,6 @@ import org.stringtree.template.ByteArrayStringCollector;
 import org.stringtree.template.StringCollector;
 import org.stringtree.template.TreeTemplater;
 import org.stringtree.tract.MapTract;
-import org.stringtree.util.Diagnostics;
 import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.Tree;
 

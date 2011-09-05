@@ -19,6 +19,7 @@ import org.stringtree.tract.FileTractReader;
 import org.stringtree.tract.MapTract;
 import org.stringtree.util.FilenameEndsWithDotTractRecognizer;
 import org.stringtree.util.SmartPathClassLoader;
+import org.stringtree.util.StringUtils;
 import org.stringtree.util.spec.SpecReader;
 import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.SimpleTree;
@@ -101,6 +102,7 @@ public class SiteGrinder {
 			}
 			int dot = name.indexOf('.');
 			String key = dot > 0 ? name.substring(0, dot) : name;
+			if (!StringUtils.isBlank(parent)) key = parent + "/" + key; 
 			String leaf = key + ".html";
 
 			MutableTree<Tract> child = new SimpleTree<Tract>();
