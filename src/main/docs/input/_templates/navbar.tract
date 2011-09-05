@@ -1,0 +1,6 @@
+pages#= home=Home
+pages#= contact=Contact
+
+<div id="navbar">
+${pages*naventry}
+</div>
