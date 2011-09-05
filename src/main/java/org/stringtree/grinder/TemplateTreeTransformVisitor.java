@@ -18,8 +18,8 @@ import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.Tree;
 
 public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tract, Tract> {
-	public static final String PAGE_PROLOGUE = "page_prologue";
-	public static final String PAGE_EPILOGUE = "page_epilogue";
+	public static final String PAGE_PROLOGUE = "prologue";
+	public static final String PAGE_EPILOGUE = "epilogue";
 	
 	TreeTemplater templater;
 	TractFinder templates;
@@ -36,7 +36,6 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tra
 	}
 	
 	protected boolean visit(Tree<Tract> from, MutableTree<Tract> to) {
-System.err.println("visit from=" + from);
 		Tract page = from.getValue();
 		if (null == page) return false;
 
@@ -44,16 +43,10 @@ System.err.println("visit from=" + from);
 		addIfNotNull(combined, templates.getObject(PAGE_PROLOGUE));
 		addIfNotNull(combined, templater.applyPrologueEpilogue(page.get(SiteGrinder.PARENT), page));
 		addIfNotNull(combined, templates.getObject(PAGE_EPILOGUE));
-System.err.println("combined=" + combined);
 		
 		StringCollector collector = new ByteArrayStringCollector();
-//		StringFinder pageContext = new FetcherStringFinder(new FallbackFetcher(page, context));
-//		templater.expandTemplate(context, page, collector);
-//		Tract epilogue = (Tract) templates.getObject(PAGE_EPILOGUE);
-//		if (null != epilogue) {
-//			templater.expand(pageContext, PAGE_EPILOGUE, collector);
-//		}
-		templater.expandTemplate(context, combined, collector);
+		StringFinder pageContext = new FetcherStringFinder(new FallbackFetcher(page, context));
+		templater.expandTemplate(pageContext, combined, collector);
 		Tract ret = new MapTract(collector.toString());
 		
 		String oldname = page.get(Tract.NAME);

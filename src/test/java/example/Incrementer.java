@@ -22,48 +22,45 @@ public class Incrementer implements Fetcher, Proxy<Integer>, LiveObjectWrapper, 
 		this(IntegerNumberUtils.intValue(start, 1));
 	}
 
-	@Override
-	public Object getObject(String name) {
-		return next();
+	@Override public Object getObject(String name) {
+		Integer next = next();
+System.err.println("Integrator.getObject returning " + next);
+		return next;
 	}
 
-	@Override
-	public Integer getValue() {
-		return next();
+	@Override public Integer getValue() {
+		Integer next = next();
+System.err.println("Integrator.getValue returning " + next);
+		return next;
 	}
 
-	@Override
-	public Object getObject() {
-		return next();
+	@Override public Object getObject() {
+		Integer next = next();
+System.err.println("Integrator.getObject returning " + next);
+		return next;
 	}
 
-	@Override
-	public Object getRaw() {
+	@Override public Object getRaw() {
 		return this;
 	}
 	
-	@Override
-	public String toString() {
+	@Override public String toString() {
 		return "" + next();
 	}
 
-	@Override
-	public Integer next() {
+	@Override public Integer next() {
 		return current++;
 	}
 
-	@Override
-	public boolean hasNext() {
+	@Override public boolean hasNext() {
 		return true;
 	}
 
-	@Override
-	public void remove() {
+	@Override public void remove() {
 		throw new UnsupportedOperationException("can't remove from the set of all integers");
 	}
 
-	@Override
-	public Iterator<Integer> iterator() {
+	@Override public Iterator<Integer> iterator() {
 		return this;
 	}
 }

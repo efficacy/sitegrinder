@@ -46,7 +46,6 @@ public class SiteGrinder {
 		String src = args[0];
 		String dest = args[1];
 		SiteGrinder grinder = new SiteGrinder();
-System.err.println("about to grind");
 		grinder.grind(new File(src), new File(dest));
 	}
 
@@ -95,7 +94,7 @@ System.err.println("about to grind");
 		pages.setValue(new MapTract(srcdir.getName()));
 		File[] files = srcdir.listFiles();
 		for (File file : files) {
-System.err.println("loading file " + file.getAbsolutePath());
+//System.err.println("loading file " + file.getAbsolutePath());
 			String name = file.getName();
 			if (name.startsWith(".") || name.startsWith("_")) {
 				continue;

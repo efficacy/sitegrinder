@@ -11,6 +11,7 @@ public class AllTests extends TestCase {
         ret.addTestSuite(MainTest.class);
         ret.addTestSuite(GrindTraversalTest.class);
         ret.addTestSuite(TemplateTransformerTest.class);
+        ret.addTestSuite(MyOwnDocs.class);
 
         return ret;
     }
