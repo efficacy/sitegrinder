@@ -1,1 +1,1 @@
-<a href="${this.key}">${this.value}</a>
+<a href="${this.key}.html">${this.value}</a>

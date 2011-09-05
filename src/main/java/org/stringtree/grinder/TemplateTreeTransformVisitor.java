@@ -14,6 +14,7 @@ import org.stringtree.template.ByteArrayStringCollector;
 import org.stringtree.template.StringCollector;
 import org.stringtree.template.TreeTemplater;
 import org.stringtree.tract.MapTract;
+import org.stringtree.util.Diagnostics;
 import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.Tree;
 
@@ -46,6 +47,7 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tra
 		
 		StringCollector collector = new ByteArrayStringCollector();
 		StringFinder pageContext = new FetcherStringFinder(new FallbackFetcher(page, context));
+//Diagnostics.dumpFetcher(pageContext, "page context");
 		templater.expandTemplate(pageContext, combined, collector);
 		Tract ret = new MapTract(collector.toString());
 		

@@ -99,12 +99,18 @@ public class SiteGrinder {
 			if (name.startsWith(".") || name.startsWith("_")) {
 				continue;
 			}
+			int dot = name.indexOf('.');
+			String key = dot > 0 ? name.substring(0, dot) : name;
+			String leaf = key + ".html";
 
 			MutableTree<Tract> child = new SimpleTree<Tract>();
 			Tract tract = new MapTract();
 			tract.put(Tract.NAME, name);
 			tract.put(PARENT, parent);
 			tract.put(FILE, file);
+			
+			tract.put("page.key", key);
+			tract.put("page.leaf", leaf);
 			
 			if (file.isDirectory()) {
 				load(file, child, parent + "/" + name, context);
