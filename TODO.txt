@@ -1,0 +1,2 @@
+
++ add support for non-html matrkup (e.g wiki, markdown, etc.)
