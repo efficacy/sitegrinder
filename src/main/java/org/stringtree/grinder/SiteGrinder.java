@@ -107,21 +107,18 @@ public class SiteGrinder {
 			int dot = name.indexOf('.');
 			String key = dot > 0 ? name.substring(0, dot) : name;
 			if (!StringUtils.isBlank(parent)) key = parent + "/" + key; 
-			String leaf = key + ".html";
 
 			MutableTree<Tract> child = new SimpleTree<Tract>();
 			Tract tract = new MapTract();
-			tract.put(Tract.NAME, leaf);
+			tract.put("page.key", key);
 			tract.put(PARENT, parent);
 			tract.put(FILE, file);
 			
-			tract.put("page.key", key);
-			tract.put("page.leaf", leaf);
 			
 			if (file.isDirectory()) {
-				load(file, child, parent + "/" + name, context);
+				load(file, child, parent, context);
 				tract.put(TYPE, TYPE_FOLDER);
-				
+				tract.put(Tract.NAME, name);
 			} else if (name.endsWith(".tpl") || name.endsWith(".tract") || name.endsWith(".page")) {
 				try {
 					FileTractReader.load(tract, file, TRACT_RECOGNISER, context);
@@ -129,8 +126,10 @@ public class SiteGrinder {
 					e.printStackTrace();
 				}
 				tract.put(TYPE, TYPE_TEMPLATE);
+				tract.put(Tract.NAME, key + ".html");
 			} else {
 				tract.put(TYPE, TYPE_BINARY);
+				tract.put(Tract.NAME, name);
 			}
 
 			child.setValue(tract);
