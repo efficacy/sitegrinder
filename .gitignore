@@ -1,4 +1,4 @@
 *.class
 bin/*
 dist/sitegrinder.jar
-src/main/docs/output/*
+src/main/tutorial/*/output/*
