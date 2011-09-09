@@ -17,7 +17,7 @@ import org.stringtree.finder.StringKeeper;
 import org.stringtree.finder.TractFinder;
 import org.stringtree.tract.FileTractReader;
 import org.stringtree.tract.MapTract;
-import org.stringtree.util.FilenameEndsWithDotTractRecognizer;
+import org.stringtree.tract.TractRecognizer;
 import org.stringtree.util.SmartPathClassLoader;
 import org.stringtree.util.StringUtils;
 import org.stringtree.util.spec.SpecReader;
@@ -36,7 +36,12 @@ public class SiteGrinder {
 	public static final String TYPE_FOLDER = "folder";
 	public static final String TYPE_BINARY = "binary";
 	
-	private static final FilenameEndsWithDotTractRecognizer TRACT_RECOGNISER = new FilenameEndsWithDotTractRecognizer();
+	private static final TractRecognizer TRACT_RECOGNISER = new TractRecognizer() {
+	    public boolean isTract(File file) {
+	        String name = file.getName();
+			return file != null && (name.endsWith(".tract") || name.endsWith(".page"));
+	    }
+	};
 	private static PrintStream log = System.out; 
 	
 	public static void main(String[] args) {
@@ -77,7 +82,7 @@ public class SiteGrinder {
 			context.put(SystemContext.SYSTEM_CLASSLOADER, new SmartPathClassLoader(classdir.getPath(), getClass().getClassLoader()));
 		}
 		
-		File spec = new File(srcdir, "site.spec");
+		File spec = new File(srcdir, "_site.spec");
 		if (spec.canRead())
 			try {
 				SpecReader.load(context, new FileReader(spec));
@@ -95,7 +100,6 @@ public class SiteGrinder {
 		pages.setValue(new MapTract(srcdir.getName()));
 		File[] files = srcdir.listFiles();
 		for (File file : files) {
-//System.err.println("loading file " + file.getAbsolutePath());
 			String name = file.getName();
 			if (name.startsWith(".") || name.startsWith("_")) {
 				continue;
@@ -107,7 +111,7 @@ public class SiteGrinder {
 
 			MutableTree<Tract> child = new SimpleTree<Tract>();
 			Tract tract = new MapTract();
-			tract.put(Tract.NAME, name);
+			tract.put(Tract.NAME, leaf);
 			tract.put(PARENT, parent);
 			tract.put(FILE, file);
 			
@@ -118,7 +122,7 @@ public class SiteGrinder {
 				load(file, child, parent + "/" + name, context);
 				tract.put(TYPE, TYPE_FOLDER);
 				
-			} else if (name.endsWith(".tpl") || name.endsWith(".tract")) {
+			} else if (name.endsWith(".tpl") || name.endsWith(".tract") || name.endsWith(".page")) {
 				try {
 					FileTractReader.load(tract, file, TRACT_RECOGNISER, context);
 				} catch (IOException e) {
