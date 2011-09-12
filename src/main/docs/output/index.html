@@ -18,14 +18,16 @@ can process a simple page definition</p>
 	<li>Create a new directory for Stringtree Site Grinder tutorials, perhaps named <tt>tutorial</tt></li>
 	<li>Create two directories in your tutorial folder named <tt>input</tt> and <tt>output</tt></li>
 	<li>Create a file in your <tt>input</tt> directory named <tt>index.page</tt></li>
-	<li>Add the following lines to the new <tt>index.page</tt> file: <pre class="example">
-page.title=Index
+	<li>Add the following lines to the new <tt>index.page</tt> file: 
+
+<br/><br/><span class="filename">index.page</span>
+<div class="example">page.title=Index
 	
-&lt;h1&gt;Hello from Stringtree Site Grinder&lt;/h1&gt;</pre>
+&lt;h1&gt;Hello from Stringtree Site Grinder&lt;/h1&gt;</div><br/>
 
 Note that there is a blank line between the page title definition and the HTML content of the page. 
 This is important, as it allows the system to tell the difference between <i>header</i> lines (which do 
-things such as define values) and the content of a page</li>
+things such as define common values) and the <i>content</i> of a page</li>
 </ol>
 
 <p>Now, let's "grind" it using the command-line tool. This is not the only way to use Stringtree Site Grinder, 
@@ -33,11 +35,38 @@ but it is a simple way to start.</p>
 <ol>
 	<li>Open a command prompt in the tutorial directory you created above</li>
 	<li>Copy the sitegrinder.jar file into your directory</li>
-	<li>Enter <tt>java -jar sitegrinder.jar input output</tt><li>
+	<li>Enter <tt>java -jar sitegrinder.jar input output</tt></li>
 </ol>
 
 <p>A new file <tt>index.html</tt> will appear in the <tt>output</tt> directory. Open the file in a web browser 
-to see your new web page with it's hello message.</p>
+to see your new (if minimal) web page with it's hello message.</p>
+
+So far this does not offer any benefits compared with just editing HTML pages, so let's add a little bit of cleverness.
+
+<ol>
+	<li>Create a directory under input named <tt>_templates</tt> (the leading underscore <b>_</b> is important)</li>
+	<li>Create two files in the new <tt>_templates</tt> directory:
+	
+<br/><br/><br/><span class="filename">_templates/prologue.tpl</span>
+<div class="example">&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Site Grinder Tutorial: ${page.title}&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;</div>
+
+<br/><br/><span class="filename">_templates/epilogue.tpl
+</span>
+<div class="example">&lt;/body&gt;
+&lt;/html&gt;
+</div><br/>
+
+	</li>
+	<li>"Grind" the web site as above: <tt>java -jar sitegrinder.jar input output</tt></li>
+</ol>
+
+<p>The file <tt>index.html</tt> will be re-generated, this time it will automatically pick up the common prologue and epilogue. 
+Refresh your web browser to see your updated web page with it's page title.</p>
+
 <hr/><i>Copyright &copy; Frank Carver 2011</i>
 </body>
 </html>
