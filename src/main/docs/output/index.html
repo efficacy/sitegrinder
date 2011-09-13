@@ -71,19 +71,33 @@ So far this does not offer any benefits compared with just editing HTML pages, s
   &lt;title&gt;Site Grinder Tutorial: ${page.title}&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
-&lt;h2&gt;${page.title}&lt;/h2&gt;</div><br/>
+&lt;h1&gt;${page.title}&lt;/h1&gt;
+</div><br/>
 <br/><span class="filename">_templates/epilogue.tpl
 </span>
 <div class="example">&lt;/body&gt;
 &lt;/html&gt;</div><br/>
 
 	</li>
-	<li>"Grind" the web site as above: <tt>java -jar sitegrinder.jar input output</tt></li>
-</ol>
+	<li>"Grind" the web site as above: <tt>java -jar sitegrinder.jar input output</tt>
 
 <p>The file <tt>index.html</tt> will be re-generated, this time it will automatically pick up the common prologue and epilogue. 
 Refresh your web browser to see your updated web page with it's page title.</p>
 
+<br/><span class="filename">index.html
+</span>
+<div class="example">&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Site Grinder Tutorial: Home&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Home&lt;/h1&gt;
+&lt;p&gt;Hello from Stringtree Site Grinder&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div><br/>
+
+</li>
+</ol>
 <hr/><i>Copyright &copy; Frank Carver 2011</i>
 </body>
 </html>

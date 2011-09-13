@@ -56,9 +56,12 @@ ${filename='_templates/prologue.tpl'}${filename*tutfile}
 ${filename='_templates/epilogue.tpl'}${filename*tutfile}
 
 	</li>
-	<li>"Grind" the web site as above: <tt>java -jar sitegrinder.jar input output</tt></li>
-</ol>
+	<li>"Grind" the web site as above: <tt>java -jar sitegrinder.jar input output</tt>
 
 <p>The file <tt>index.html</tt> will be re-generated, this time it will automatically pick up the common prologue and epilogue. 
 Refresh your web browser to see your updated web page with it's page title.</p>
 
+${filename='index.html'}${filename*outfile}
+
+</li>
+</ol>

@@ -3,4 +3,4 @@
   <title>${site.name}: ${page.title}</title>
 </head>
 <body>
-<h2>${page.title}</h2>
+<h1>${page.title}</h1>
