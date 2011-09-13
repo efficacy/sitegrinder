@@ -1,5 +1,6 @@
 SOONER
 ------
++ Usage documentation / web site
 + initial tutorial
 + construct internal model of site for use in pages (dynamic sitemap/navbar etc.)
 
@@ -18,3 +19,7 @@ LATER
 + push generated files to server via FTP (credentials?)
 + push generated files to server via scp/SFTP (credentials?)
 + push generated files to server via rsync
+
+DONE
+----
+2011-09-13 tutorial examples now imported from tested files

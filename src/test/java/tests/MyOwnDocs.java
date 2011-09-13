@@ -7,9 +7,6 @@ import junit.framework.TestCase;
 import org.stringtree.grinder.SiteGrinder;
 
 public class MyOwnDocs extends TestCase {
-	public void testProjectWebsite() {
-		grind("src/main/docs/");
-	}
 
 	public void testTutorialStep1() {
 		grind("src/main/tutorial/step1/");
@@ -17,6 +14,15 @@ public class MyOwnDocs extends TestCase {
 
 	public void testTutorialStep2() {
 		grind("src/main/tutorial/step2/");
+	}
+
+	public void testTutorialStep3() {
+		grind("src/main/tutorial/step3/");
+	}
+
+	// do this last, as it uses output from the steps
+	public void testProjectWebsite() {
+		grind("src/main/docs/");
 	}
 
 	public void grind(String base) {
