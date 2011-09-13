@@ -48,7 +48,8 @@ So far this does not offer any benefits compared with just editing HTML pages, s
 &lt;head&gt;
   &lt;title&gt;Site Grinder Tutorial: ${'$'}{page.title}&lt;/title&gt;
 &lt;/head&gt;
-&lt;body&gt;</div>
+&lt;body&gt;
+&lt;h2&gt;${'$'}{page.title}&lt;/h2&gt;</div>
 
 <br/><br/><span class="filename">_templates/epilogue.tpl
 </span>
