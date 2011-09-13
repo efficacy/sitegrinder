@@ -1,2 +1,20 @@
+SOONER
+------
++ initial tutorial
++ construct internal model of site for use in pages (dynamic sitemap/navbar etc.)
 
+LATER
+-----
++ more tutorials and documentation
++ consider providing useful classes in jar (e.g current date, escape HTML...)
++ move over to use/include emo rather than old stringtree jar
 + add support for non-html matrkup (e.g wiki, markdown, etc.)
++ local graphic UI for page/template management
++ remote web UI for page/template management
++ editor/compiler for code snippets
++ fetch source files from version control
++ fetch source files from arbitrary URL
++ push generated files to version control
++ push generated files to server via FTP (credentials?)
++ push generated files to server via scp/SFTP (credentials?)
++ push generated files to server via rsync
