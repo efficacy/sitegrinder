@@ -1,3 +1,2 @@
-<br/><span class="filename">${this}
-</span>
-<div class="example">${tut.loadoutput}</div><br/>
+<br/><div class="outfilename">${this}</div>
+<div class="outexample">${tut.loadoutput}</div><br/>
