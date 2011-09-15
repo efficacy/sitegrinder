@@ -2,12 +2,11 @@ package example;
 
 import java.util.Iterator;
 
-import org.stringtree.Fetcher;
-import org.stringtree.fetcher.LiveObjectWrapper;
+import org.stringtree.Context;
+import org.stringtree.Proxy;
 import org.stringtree.util.IntegerNumberUtils;
-import org.stringtree.util.Proxy;
 
-public class Incrementer implements Fetcher, Proxy<Integer>, LiveObjectWrapper, Iterator<Integer>, Iterable<Integer> {
+public class Incrementer implements Context<Object>, Proxy<Integer>, LiveObjectWrapper, Iterator<Integer>, Iterable<Integer> {
 	private int current;
 
 	public Incrementer(int start) {
@@ -22,7 +21,7 @@ public class Incrementer implements Fetcher, Proxy<Integer>, LiveObjectWrapper, 
 		this(IntegerNumberUtils.intValue(start, 1));
 	}
 
-	@Override public Object getObject(String name) {
+	@Override public Object get(String name) {
 		Integer next = next();
 System.err.println("Integrator.getObject returning " + next);
 		return next;

@@ -6,21 +6,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import org.stringtree.SystemContext;
+import org.stringtree.Context;
 import org.stringtree.Tract;
-import org.stringtree.fetcher.MapFetcher;
-import org.stringtree.fetcher.TractDirectoryRepository;
-import org.stringtree.fetcher.filter.SuffixListFilter;
-import org.stringtree.finder.FetcherTractFinder;
-import org.stringtree.finder.MapStringKeeper;
-import org.stringtree.finder.StringKeeper;
-import org.stringtree.finder.TractFinder;
-import org.stringtree.tract.FileTractReader;
+import org.stringtree.context.DirectoryContext;
+import org.stringtree.context.MapContext;
+import org.stringtree.solomon.Template;
 import org.stringtree.tract.MapTract;
-import org.stringtree.tract.TractRecognizer;
 import org.stringtree.util.SmartPathClassLoader;
 import org.stringtree.util.StringUtils;
-import org.stringtree.util.spec.SpecReader;
 import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.SimpleTree;
 import org.stringtree.util.tree.Tree;
@@ -28,6 +21,8 @@ import org.stringtree.util.tree.TreeTransformer;
 import org.stringtree.util.tree.TreeWalker;
 
 public class SiteGrinder {
+	public static final String NAME = "~name";
+	public static final String DATE = "~date";
 	public static final String TYPE = "~type";
 	public static final String FILE = "~file";
 	public static final String PARENT = "~parent";
@@ -69,13 +64,13 @@ public class SiteGrinder {
 			return;
 		}
 		
-		StringKeeper context = new MapStringKeeper();
-		MutableTree<Tract> pages = new SimpleTree<Tract>();
+		Context<Object> context = new MapContext<Object>();
+		MutableTree<Template> pages = new SimpleTree<Template>();
 		
 		File tpldir = new File(srcdir, "_templates");
-		TractFinder templates = new FetcherTractFinder(tpldir.exists() 
-			? new TractDirectoryRepository(tpldir, new SuffixListFilter(".tract", ".tpl"), false, context)
-		    : new MapFetcher());
+		Context<Template> templates = tpldir.exists() 
+			? new DirectoryContext<Template>(tpldir, new SuffixListFilter(".tract", ".tpl"), false, context)
+		    : new MapContext<Template>();
 		
 		File classdir = new File(srcdir, "_classes");
 		if (classdir.isDirectory()) {
@@ -96,7 +91,7 @@ public class SiteGrinder {
 		save(destdir, site);
 	}
 
-	public void load(File srcdir, MutableTree<Tract> pages, String parent, StringKeeper context) {
+	public void load(File srcdir, MutableTree<Template> pages, String parent, Context<Object> context) {
 		pages.setValue(new MapTract(srcdir.getName()));
 		File[] files = srcdir.listFiles();
 		for (File file : files) {
@@ -118,7 +113,7 @@ public class SiteGrinder {
 			if (file.isDirectory()) {
 				load(file, child, parent, context);
 				tract.put(TYPE, TYPE_FOLDER);
-				tract.put(Tract.NAME, name);
+				tract.put(NAME, name);
 			} else if (name.endsWith(".tpl") || name.endsWith(".tract") || name.endsWith(".page")) {
 				try {
 					FileTractReader.load(tract, file, TRACT_RECOGNISER, context);
@@ -126,10 +121,10 @@ public class SiteGrinder {
 					e.printStackTrace();
 				}
 				tract.put(TYPE, TYPE_TEMPLATE);
-				tract.put(Tract.NAME, key + ".html");
+				tract.put(NAME, key + ".html");
 			} else {
 				tract.put(TYPE, TYPE_BINARY);
-				tract.put(Tract.NAME, name);
+				tract.put(NAME, name);
 			}
 
 			child.setValue(tract);
@@ -137,7 +132,7 @@ public class SiteGrinder {
 		}
 	}
 
-	public void load(File srcdir, MutableTree<Tract> pages, StringKeeper context) {
+	public void load(File srcdir, MutableTree<Template> pages, Context<Object> context) {
 		load(srcdir, pages, "", context);
 	}
 	
@@ -146,8 +141,8 @@ public class SiteGrinder {
 		walker.walkChildren(new StringFileWritingTreeVisitor(destdir));
 	}
 
-	public void grind(final Tree<Tract> pages, final TractFinder templates, final MutableTree<Tract> site, 
-			StringKeeper context) {
+	public void grind(final Tree<Template> pages, final Context<Template> templates, final MutableTree<Tract> site, 
+			Context<Object> context) {
 		if (null == pages) throw new IllegalArgumentException("cannot grind from null page source");
 		if (null == templates) throw new IllegalArgumentException("cannot grind from null template source");
 		if (null == site) throw new IllegalArgumentException("cannot grind to null site tree");

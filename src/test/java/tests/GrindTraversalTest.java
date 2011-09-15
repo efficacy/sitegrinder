@@ -5,13 +5,11 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
+import org.stringtree.Context;
 import org.stringtree.Tract;
-import org.stringtree.fetcher.MapFetcher;
-import org.stringtree.finder.FetcherTractKeeper;
-import org.stringtree.finder.MapStringKeeper;
-import org.stringtree.finder.StringKeeper;
-import org.stringtree.finder.TractKeeper;
+import org.stringtree.context.MapContext;
 import org.stringtree.grinder.SiteGrinder;
+import org.stringtree.solomon.Template;
 import org.stringtree.tract.MapTract;
 import org.stringtree.util.testing.Checklist;
 import org.stringtree.util.tree.MutableTree;
@@ -19,17 +17,17 @@ import org.stringtree.util.tree.SimpleTree;
 import org.stringtree.util.tree.Tree;
 
 public class GrindTraversalTest extends TestCase {
-	StringKeeper context;
+	Context<Object> context;
 	SiteGrinder grinder;
 	MutableTree<Tract> pages;
-	TractKeeper templates;
+	Context<Template> templates;
 	MutableTree<Tract> site;
 	
 	public void setUp() {
-		context = new MapStringKeeper();
+		context = new MapContext<Object>();
 		grinder = new SiteGrinder();
 		pages = new SimpleTree<Tract>();
-		templates = new FetcherTractKeeper(new MapFetcher());
+		templates = new MapContext<Template>();
 		site = new SimpleTree<Tract>();
 	}
 	
@@ -71,7 +69,7 @@ public class GrindTraversalTest extends TestCase {
 		pages.addChild(new SimpleTree<Tract>(new MapTract("hello")));
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
-		assertEquals("brasspyramid.com", site.getValue().getContent());
+		assertEquals("brasspyramid.com", site.getValue().getBodyAsString());
 		assertTrue(new Checklist<Tree<Tract>>(
 				new SimpleTree<Tract>(new MapTract("hello")) 
 			).check(site.getChildren()));
@@ -84,7 +82,7 @@ public class GrindTraversalTest extends TestCase {
 		pages.addChild(new SimpleTree<Tract>(new MapTract("goodbye")));
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
-		assertEquals("brasspyramid.com", site.getValue().getContent());
+		assertEquals("brasspyramid.com", site.getValue().getBodyAsString());
 		assertTrue(new Checklist<Tree<Tract>>(
 				new SimpleTree<Tract>(new MapTract("hello")), 
 				new SimpleTree<Tract>(new MapTract("goodbye")) 
@@ -99,7 +97,7 @@ public class GrindTraversalTest extends TestCase {
 		child.addChild(new SimpleTree<Tract>(new MapTract("goodbye")));
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
-		assertEquals("brasspyramid.com", site.getValue().getContent());
+		assertEquals("brasspyramid.com", site.getValue().getBodyAsString());
 		assertTrue(new Checklist<Tree<Tract>>(
 				new SimpleTree<Tract>(new MapTract("hello"), children("goodbye")) 
 		).check(site.getChildren()));

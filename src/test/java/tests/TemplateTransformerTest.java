@@ -2,30 +2,29 @@ package tests;
 
 import junit.framework.TestCase;
 
+import org.stringtree.Context;
 import org.stringtree.Tract;
-import org.stringtree.fetcher.MapFetcher;
-import org.stringtree.finder.FetcherTractKeeper;
-import org.stringtree.finder.MapStringKeeper;
-import org.stringtree.finder.StringKeeper;
-import org.stringtree.finder.TractKeeper;
+import org.stringtree.context.MapContext;
+import org.stringtree.grinder.SiteGrinder;
 import org.stringtree.grinder.TemplateTreeTransformVisitor;
-import org.stringtree.template.Templater;
+import org.stringtree.solomon.Solomon;
+import org.stringtree.solomon.Template;
 import org.stringtree.tract.MapTract;
 import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.SimpleTree;
 
 public class TemplateTransformerTest extends TestCase {
-	Templater templater;
-	TractKeeper templates;
-	StringKeeper context;
+	Solomon templater;
+	Context<Template> templates;
+	Context<Object> context;
 	TemplateTreeTransformVisitor tttv;
 	
 	MutableTree<Tract> from;
 	MutableTree<Tract> to;
 
 	public void setUp() {
-		templates = new FetcherTractKeeper(new MapFetcher());
-		context = new MapStringKeeper();
+		templates = new MapContext<Template>();
+		context = new MapContext<Object>();
 		tttv = new TemplateTreeTransformVisitor(templates, context);
 		from = new SimpleTree<Tract>();
 		to = new SimpleTree<Tract>();
@@ -45,12 +44,12 @@ public class TemplateTransformerTest extends TestCase {
 		String content = "example text";
 		from.setValue(tract(content, "example.tpl"));
 		tttv.enter(from, to);
-		assertEquals(content, to.getValue().getContent());
+		assertEquals(content, to.getValue().getBodyAsString());
 	}
 
 	private Tract tract(String content, String name) {
 		Tract ret = new MapTract(content);
-		ret.put(Tract.NAME, name);
+		ret.put(SiteGrinder.NAME, name);
 		return ret;
 	}
 	
@@ -58,7 +57,7 @@ public class TemplateTransformerTest extends TestCase {
 		context.put("text", "Frank");
 		from.setValue(new MapTract("example ${text}"));
 		tttv.enter(from, to);
-		assertEquals("example Frank", to.getValue().getContent());
+		assertEquals("example Frank", to.getValue().getBodyAsString());
 	}
 	
 	public void testTractSubstitution() {
@@ -66,14 +65,14 @@ public class TemplateTransformerTest extends TestCase {
 		page.put("text", "Frank");
 		from.setValue(page);
 		tttv.enter(from, to);
-		assertEquals("example Frank", to.getValue().getContent());
+		assertEquals("example Frank", to.getValue().getBodyAsString());
 	}
 	
 	public void testSubTemplate() {
 		templates.put("text", new MapTract("Margaret"));
 		from.setValue(new MapTract("example ${*text}"));
 		tttv.enter(from, to);
-		assertEquals("example Margaret", to.getValue().getContent());
+		assertEquals("example Margaret", to.getValue().getBodyAsString());
 	}
 	
 	public void testSubTract() {
@@ -84,7 +83,7 @@ public class TemplateTransformerTest extends TestCase {
 		
 		from.setValue(new MapTract("${name} ${*text} ${name}"));
 		tttv.enter(from, to);
-		assertEquals("Elizabeth Katherine Elizabeth", to.getValue().getContent());
+		assertEquals("Elizabeth Katherine Elizabeth", to.getValue().getBodyAsString());
 	}
 	
 	public void testHeaderFooter() {
@@ -92,7 +91,7 @@ public class TemplateTransformerTest extends TestCase {
 		templates.put(TemplateTreeTransformVisitor.PAGE_EPILOGUE, new MapTract("]After"));
 		from.setValue(new MapTract("example text"));
 		tttv.enter(from, to);
-		assertEquals("Before[example text]After", to.getValue().getContent());
+		assertEquals("Before[example text]After", to.getValue().getBodyAsString());
 	}
 	
 	public void testHeaderFooterSubstitution() {
@@ -101,6 +100,6 @@ public class TemplateTransformerTest extends TestCase {
 		page.put("title", "Home");
 		from.setValue(page);
 		tttv.enter(from, to);
-		assertEquals("(title=Home)example text", to.getValue().getContent());
+		assertEquals("(title=Home)example text", to.getValue().getBodyAsString());
 	}
 }

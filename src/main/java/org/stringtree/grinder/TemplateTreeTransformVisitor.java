@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.stringtree.Context;
 import org.stringtree.Tract;
-import org.stringtree.fetcher.FallbackFetcher;
-import org.stringtree.finder.FetcherStringFinder;
-import org.stringtree.finder.StringFinder;
-import org.stringtree.finder.StringKeeper;
-import org.stringtree.finder.TractFinder;
-import org.stringtree.template.ByteArrayStringCollector;
-import org.stringtree.template.StringCollector;
-import org.stringtree.template.TreeTemplater;
+import org.stringtree.context.FallbackContext;
+import org.stringtree.solomon.Collector;
+import org.stringtree.solomon.Template;
+import org.stringtree.solomon.collector.StringBuilderCollector;
+import org.stringtree.solomon.tree.TreeTemplater;
 import org.stringtree.tract.MapTract;
 import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.Tree;
@@ -21,11 +19,13 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tra
 	public static final String PAGE_PROLOGUE = "prologue";
 	public static final String PAGE_EPILOGUE = "epilogue";
 	
+    static final String CHARSET = "charset";
+	
 	TreeTemplater templater;
-	TractFinder templates;
-	StringKeeper context;
+	Context<Template> templates;
+	Context<Object> context;
 
-	public TemplateTreeTransformVisitor(TractFinder templates, StringKeeper context) {
+	public TemplateTreeTransformVisitor(Context<Template> templates, Context<Object> context) {
 		this.templates = templates;
 		this.context = context;
 		this.templater = new TreeTemplater(templates);
@@ -40,22 +40,22 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tra
 		if (null == page) return false;
 
 		List<Object> combined = new ArrayList<Object>();
-		addIfNotNull(combined, templates.getObject(PAGE_PROLOGUE));
+		addIfNotNull(combined, templates.get(PAGE_PROLOGUE));
 		addIfNotNull(combined, templater.applyPrologueEpilogue(page.get(SiteGrinder.PARENT), page));
-		addIfNotNull(combined, templates.getObject(PAGE_EPILOGUE));
+		addIfNotNull(combined, templates.get(PAGE_EPILOGUE));
 		
-		StringCollector collector = new ByteArrayStringCollector();
-		StringFinder pageContext = new FetcherStringFinder(new FallbackFetcher(page, context));
+		Collector collector = new StringBuilderCollector();
+		Context<String> pageContext = new FallbackContext(page, context);
 //Diagnostics.dumpFetcher(pageContext, "page context");
-		templater.expandTemplate(pageContext, combined, collector);
+		templater.expand(pageContext, combined, collector);
 		Tract ret = new MapTract(collector.toString());
 		
-		String oldname = page.get(Tract.NAME);
+		String oldname = page.get(SiteGrinder.NAME);
 		String newname = oldname.replaceAll("\\.(tract|tpl)$", ".html");
-		ret.put(Tract.NAME, newname);
-		ret.put(SiteGrinder.TYPE, page.getObject(SiteGrinder.TYPE));
-		ret.put(SiteGrinder.FILE, page.getObject(SiteGrinder.FILE));
-		ret.put(Tract.NAME, newname);
+		ret.put(SiteGrinder.NAME, newname);
+		ret.put(SiteGrinder.TYPE, page.get(SiteGrinder.TYPE));
+		ret.put(SiteGrinder.FILE, page.get(SiteGrinder.FILE));
+		ret.put(SiteGrinder.NAME, newname);
 		to.setValue(ret);
 		return true;
 	}

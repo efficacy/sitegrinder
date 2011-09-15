@@ -26,7 +26,7 @@ public class StringFileWritingTreeVisitor implements TreeVisitor<Tract> {
 	public void enter(Tree<Tract> node) {
 		Tract page = node.getValue();
 		String type = page.get(SiteGrinder.TYPE);
-		String name = page.get(Tract.NAME);
+		String name = page.get(SiteGrinder.NAME);
 		if (SiteGrinder.TYPE_BINARY.equals(type)) {
 			copy((File)page.getObject(SiteGrinder.FILE), new File(current.peek(), name));
 		} else if (SiteGrinder.TYPE_FOLDER.equals(type)) {
@@ -36,12 +36,12 @@ public class StringFileWritingTreeVisitor implements TreeVisitor<Tract> {
 		} else if (SiteGrinder.TYPE_TEMPLATE.equals(type)) {
 			try {
 				if (StringUtils.isBlank(name)) {
-					name = page.getContent();
+					name = page.getBodyAsString();
 					File file = new File(current.peek(), name);
 					file.mkdir();
 				} else {
 					File file = new File(current.peek(), name);
-					FileWritingUtils.writeFile(file, page.getContent());
+					FileWritingUtils.writeFile(file, page.getBodyAsString());
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
