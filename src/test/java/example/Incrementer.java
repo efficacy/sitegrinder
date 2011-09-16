@@ -2,11 +2,11 @@ package example;
 
 import java.util.Iterator;
 
-import org.stringtree.Context;
-import org.stringtree.Proxy;
+import org.stringtree.context.ContextEntry;
+import org.stringtree.context.ReadOnlyContext;
 import org.stringtree.util.IntegerNumberUtils;
 
-public class Incrementer implements Context<Object>, Proxy<Integer>, LiveObjectWrapper, Iterator<Integer>, Iterable<Integer> {
+public class Incrementer extends ReadOnlyContext<Integer> implements Iterator<ContextEntry<Integer>> {
 	private int current;
 
 	public Incrementer(int start) {
@@ -21,34 +21,28 @@ public class Incrementer implements Context<Object>, Proxy<Integer>, LiveObjectW
 		this(IntegerNumberUtils.intValue(start, 1));
 	}
 
-	@Override public Object get(String name) {
-		Integer next = next();
+	@Override public Integer get(String name) {
+		Integer next = nextValue();
+System.err.println("Integrator.get returning " + next);
+		return next;
+	}
+
+	@Override public Object getObject(String key) {
+		Integer next = nextValue();
 System.err.println("Integrator.getObject returning " + next);
 		return next;
-	}
-
-	@Override public Integer getValue() {
-		Integer next = next();
-System.err.println("Integrator.getValue returning " + next);
-		return next;
-	}
-
-	@Override public Object getObject() {
-		Integer next = next();
-System.err.println("Integrator.getObject returning " + next);
-		return next;
-	}
-
-	@Override public Object getRaw() {
-		return this;
 	}
 	
 	@Override public String toString() {
-		return "" + next();
+		return Integer.toString(current);
 	}
 
-	@Override public Integer next() {
+	private Integer nextValue() {
 		return current++;
+	}
+
+	@Override public ContextEntry<Integer> next() {
+		return new ContextEntry<Integer>("value", nextValue());
 	}
 
 	@Override public boolean hasNext() {
@@ -59,7 +53,7 @@ System.err.println("Integrator.getObject returning " + next);
 		throw new UnsupportedOperationException("can't remove from the set of all integers");
 	}
 
-	@Override public Iterator<Integer> iterator() {
+	@Override public Iterator<ContextEntry<Integer>> iterator() {
 		return this;
 	}
 }

@@ -9,12 +9,13 @@ import java.nio.channels.FileChannel;
 import java.util.Stack;
 
 import org.stringtree.Tract;
+import org.stringtree.solomon.Template;
 import org.stringtree.util.FileWritingUtils;
 import org.stringtree.util.StringUtils;
 import org.stringtree.util.tree.Tree;
 import org.stringtree.util.tree.TreeVisitor;
 
-public class StringFileWritingTreeVisitor implements TreeVisitor<Tract> {
+public class StringFileWritingTreeVisitor implements TreeVisitor<Template> {
 
 	Stack<File> current;
 	
@@ -23,8 +24,8 @@ public class StringFileWritingTreeVisitor implements TreeVisitor<Tract> {
 		current.push(destdir);
 	}
 
-	public void enter(Tree<Tract> node) {
-		Tract page = node.getValue();
+	public void enter(Tree<Template> node) {
+		Template page = node.getValue();
 		String type = page.get(SiteGrinder.TYPE);
 		String name = page.get(SiteGrinder.NAME);
 		if (SiteGrinder.TYPE_BINARY.equals(type)) {
@@ -49,8 +50,8 @@ public class StringFileWritingTreeVisitor implements TreeVisitor<Tract> {
 		}
 	}
 
-	public void exit(Tree<Tract> node) {
-		Tract page = node.getValue();
+	public void exit(Tree<Template> node) {
+		Template page = node.getValue();
 		String type = page.get(SiteGrinder.TYPE);
 		if (SiteGrinder.TYPE_FOLDER.equals(type)) current.pop();
 	}

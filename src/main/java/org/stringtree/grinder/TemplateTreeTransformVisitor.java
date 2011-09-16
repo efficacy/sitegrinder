@@ -15,7 +15,7 @@ import org.stringtree.tract.MapTract;
 import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.Tree;
 
-public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tract, Tract> {
+public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Template, Tract> {
 	public static final String PAGE_PROLOGUE = "prologue";
 	public static final String PAGE_EPILOGUE = "epilogue";
 	
@@ -35,8 +35,8 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tra
 		if (null != item) collection.add(item);
 	}
 	
-	protected boolean visit(Tree<Tract> from, MutableTree<Tract> to) {
-		Tract page = from.getValue();
+	protected boolean visit(Tree<Template> from, MutableTree<Tract> to) {
+		Template page = from.getValue();
 		if (null == page) return false;
 
 		List<Object> combined = new ArrayList<Object>();
@@ -45,7 +45,7 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tra
 		addIfNotNull(combined, templates.get(PAGE_EPILOGUE));
 		
 		Collector collector = new StringBuilderCollector();
-		Context<String> pageContext = new FallbackContext(page, context);
+		Context<Object> pageContext = new FallbackContext(/* page, */ context);
 //Diagnostics.dumpFetcher(pageContext, "page context");
 		templater.expand(pageContext, combined, collector);
 		Tract ret = new MapTract(collector.toString());

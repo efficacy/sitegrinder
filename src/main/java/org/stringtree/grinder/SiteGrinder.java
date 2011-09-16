@@ -3,15 +3,16 @@ package org.stringtree.grinder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintStream;
 
 import org.stringtree.Context;
+import org.stringtree.SystemContext;
 import org.stringtree.Tract;
-import org.stringtree.context.DirectoryContext;
+import org.stringtree.context.ConvertingContext;
 import org.stringtree.context.MapContext;
+import org.stringtree.converter.TemplateFileConverter;
 import org.stringtree.solomon.Template;
-import org.stringtree.tract.MapTract;
+import org.stringtree.spec.SpecReader;
 import org.stringtree.util.SmartPathClassLoader;
 import org.stringtree.util.StringUtils;
 import org.stringtree.util.tree.MutableTree;
@@ -30,13 +31,7 @@ public class SiteGrinder {
 	public static final String TYPE_TEMPLATE = "template";
 	public static final String TYPE_FOLDER = "folder";
 	public static final String TYPE_BINARY = "binary";
-	
-	private static final TractRecognizer TRACT_RECOGNISER = new TractRecognizer() {
-	    public boolean isTract(File file) {
-	        String name = file.getName();
-			return file != null && (name.endsWith(".tract") || name.endsWith(".page"));
-	    }
-	};
+
 	private static PrintStream log = System.out; 
 	
 	public static void main(String[] args) {
@@ -69,7 +64,7 @@ public class SiteGrinder {
 		
 		File tpldir = new File(srcdir, "_templates");
 		Context<Template> templates = tpldir.exists() 
-			? new DirectoryContext<Template>(tpldir, new SuffixListFilter(".tract", ".tpl"), false, context)
+			? new ConvertingContext<Template>(new TemplateFileConverter(tpldir))
 		    : new MapContext<Template>();
 		
 		File classdir = new File(srcdir, "_classes");
@@ -92,7 +87,8 @@ public class SiteGrinder {
 	}
 
 	public void load(File srcdir, MutableTree<Template> pages, String parent, Context<Object> context) {
-		pages.setValue(new MapTract(srcdir.getName()));
+//		pages.setValue(new MapTract(srcdir.getName()));
+		Context<Template> src = new ConvertingContext<Template>(new TemplateFileConverter(srcdir));
 		File[] files = srcdir.listFiles();
 		for (File file : files) {
 			String name = file.getName();
@@ -103,31 +99,29 @@ public class SiteGrinder {
 			String key = dot > 0 ? name.substring(0, dot) : name;
 			if (!StringUtils.isBlank(parent)) key = parent + "/" + key; 
 
-			MutableTree<Tract> child = new SimpleTree<Tract>();
-			Tract tract = new MapTract();
-			tract.put("page.key", key);
-			tract.put(PARENT, parent);
-			tract.put(FILE, file);
-			
+			MutableTree<Template> child = new SimpleTree<Template>();
+			Template template;
+//			Tract tract = new MapTract();
+//			tract.put("page.key", key);
+//			tract.put(PARENT, parent);
+//			tract.put(FILE, file);
 			
 			if (file.isDirectory()) {
 				load(file, child, parent, context);
-				tract.put(TYPE, TYPE_FOLDER);
-				tract.put(NAME, name);
+				template = new Template();
+//				tract.put(TYPE, TYPE_FOLDER);
+//				tract.put(NAME, name);
 			} else if (name.endsWith(".tpl") || name.endsWith(".tract") || name.endsWith(".page")) {
-				try {
-					FileTractReader.load(tract, file, TRACT_RECOGNISER, context);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				tract.put(TYPE, TYPE_TEMPLATE);
-				tract.put(NAME, key + ".html");
+				template = src.get(name);
+//				tract.put(TYPE, TYPE_TEMPLATE);
+//				tract.put(NAME, key + ".html");
 			} else {
-				tract.put(TYPE, TYPE_BINARY);
-				tract.put(NAME, name);
+				template = new Template();
+//				tract.put(TYPE, TYPE_BINARY);
+//				tract.put(NAME, name);
 			}
 
-			child.setValue(tract);
+			child.setValue(template);
 			pages.addChild(child);
 		}
 	}
@@ -149,7 +143,7 @@ public class SiteGrinder {
 
 		if (pages.isEmpty()) return;
 		
-		TreeTransformer<Tract,Tract> tx = new TreeTransformer<Tract,Tract>(pages, site);
+		TreeTransformer<Template,Tract> tx = new TreeTransformer<Template,Tract>(pages, site);
 		tx.transform(new TemplateTreeTransformVisitor(templates, context));
 	}
 }

@@ -19,14 +19,14 @@ import org.stringtree.util.tree.Tree;
 public class GrindTraversalTest extends TestCase {
 	Context<Object> context;
 	SiteGrinder grinder;
-	MutableTree<Tract> pages;
+	MutableTree<Template> pages;
 	Context<Template> templates;
 	MutableTree<Tract> site;
 	
 	public void setUp() {
 		context = new MapContext<Object>();
 		grinder = new SiteGrinder();
-		pages = new SimpleTree<Tract>();
+		pages = new SimpleTree<Template>();
 		templates = new MapContext<Template>();
 		site = new SimpleTree<Tract>();
 	}
@@ -65,8 +65,8 @@ public class GrindTraversalTest extends TestCase {
 	
 	@SuppressWarnings("unchecked")
 	public void testSingleSimplePage() {
-		pages.setValue(new MapTract("brasspyramid.com"));
-		pages.addChild(new SimpleTree<Tract>(new MapTract("hello")));
+//		pages.setValue(new MapTract("brasspyramid.com"));
+		pages.addChild(new SimpleTree<Template>(new Template("hello")));
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
 		assertEquals("brasspyramid.com", site.getValue().getBodyAsString());
@@ -77,9 +77,9 @@ public class GrindTraversalTest extends TestCase {
 	
 	@SuppressWarnings("unchecked")
 	public void testMultipleSimplePage() {
-		pages.setValue(new MapTract("brasspyramid.com"));
-		pages.addChild(new SimpleTree<Tract>(new MapTract("hello")));
-		pages.addChild(new SimpleTree<Tract>(new MapTract("goodbye")));
+//		pages.setValue(new MapTract("brasspyramid.com"));
+		pages.addChild(new SimpleTree<Template>(new Template("hello")));
+		pages.addChild(new SimpleTree<Template>(new Template("goodbye")));
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
 		assertEquals("brasspyramid.com", site.getValue().getBodyAsString());
@@ -91,10 +91,10 @@ public class GrindTraversalTest extends TestCase {
 	
 	@SuppressWarnings("unchecked")
 	public void testHierarchy() {
-		pages.setValue(new MapTract("brasspyramid.com"));
-		MutableTree<Tract> child = new SimpleTree<Tract>(new MapTract("hello"));
+//		pages.setValue(new MapTract("brasspyramid.com"));
+		MutableTree<Template> child = new SimpleTree<Template>(new Template("hello"));
 		pages.addChild(child);
-		child.addChild(new SimpleTree<Tract>(new MapTract("goodbye")));
+		child.addChild(new SimpleTree<Template>(new Template("goodbye")));
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
 		assertEquals("brasspyramid.com", site.getValue().getBodyAsString());

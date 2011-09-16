@@ -9,7 +9,7 @@ import org.stringtree.grinder.SiteGrinder;
 import org.stringtree.grinder.TemplateTreeTransformVisitor;
 import org.stringtree.solomon.Solomon;
 import org.stringtree.solomon.Template;
-import org.stringtree.tract.MapTract;
+import org.stringtree.util.LiteralMap;
 import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.SimpleTree;
 
@@ -19,14 +19,14 @@ public class TemplateTransformerTest extends TestCase {
 	Context<Object> context;
 	TemplateTreeTransformVisitor tttv;
 	
-	MutableTree<Tract> from;
+	MutableTree<Template> from;
 	MutableTree<Tract> to;
 
 	public void setUp() {
 		templates = new MapContext<Template>();
 		context = new MapContext<Object>();
 		tttv = new TemplateTreeTransformVisitor(templates, context);
-		from = new SimpleTree<Tract>();
+		from = new SimpleTree<Template>();
 		to = new SimpleTree<Tract>();
 	}
 	
@@ -42,63 +42,55 @@ public class TemplateTransformerTest extends TestCase {
 	
 	public void testLiteral() {
 		String content = "example text";
-		from.setValue(tract(content, "example.tpl"));
+		from.setValue(template(content, SiteGrinder.NAME, "example.tpl"));
 		tttv.enter(from, to);
 		assertEquals(content, to.getValue().getBodyAsString());
 	}
 
-	private Tract tract(String content, String name) {
-		Tract ret = new MapTract(content);
-		ret.put(SiteGrinder.NAME, name);
-		return ret;
+	private Template template(String content, String... attributes) {
+		return new Template(content, new MapContext<String>(new LiteralMap<String,String>(attributes)));
 	}
 	
 	public void testSimpleSubstitution() {
 		context.put("text", "Frank");
-		from.setValue(new MapTract("example ${text}"));
+		from.setValue(template("example ${text}"));
 		tttv.enter(from, to);
 		assertEquals("example Frank", to.getValue().getBodyAsString());
 	}
 	
 	public void testTractSubstitution() {
-		Tract page = new MapTract("example ${text}");
-		page.put("text", "Frank");
-		from.setValue(page);
+		from.setValue(template("example ${text}", "text", "Frank"));
 		tttv.enter(from, to);
 		assertEquals("example Frank", to.getValue().getBodyAsString());
 	}
 	
 	public void testSubTemplate() {
-		templates.put("text", new MapTract("Margaret"));
-		from.setValue(new MapTract("example ${*text}"));
+		templates.put("text", new Template("Margaret"));
+		from.setValue(template("example ${*text}"));
 		tttv.enter(from, to);
 		assertEquals("example Margaret", to.getValue().getBodyAsString());
 	}
 	
 	public void testSubTract() {
-		Tract tract = new MapTract("${name}");
-		tract.put("name", "Katherine");
-		templates.put("text", tract);
+		templates.put("text", template("${name}", "name", "Katherine"));
 		context.put("name", "Elizabeth");
 		
-		from.setValue(new MapTract("${name} ${*text} ${name}"));
+		from.setValue(template("${name} ${*text} ${name}"));
 		tttv.enter(from, to);
 		assertEquals("Elizabeth Katherine Elizabeth", to.getValue().getBodyAsString());
 	}
 	
 	public void testHeaderFooter() {
-		templates.put(TemplateTreeTransformVisitor.PAGE_PROLOGUE, new MapTract("Before["));
-		templates.put(TemplateTreeTransformVisitor.PAGE_EPILOGUE, new MapTract("]After"));
-		from.setValue(new MapTract("example text"));
+		templates.put(TemplateTreeTransformVisitor.PAGE_PROLOGUE, new Template("Before["));
+		templates.put(TemplateTreeTransformVisitor.PAGE_EPILOGUE, new Template("]After"));
+		from.setValue(template("example text"));
 		tttv.enter(from, to);
 		assertEquals("Before[example text]After", to.getValue().getBodyAsString());
 	}
 	
 	public void testHeaderFooterSubstitution() {
-		templates.put(TemplateTreeTransformVisitor.PAGE_PROLOGUE, new MapTract("(title=${title})"));
-		MapTract page = new MapTract("example text");
-		page.put("title", "Home");
-		from.setValue(page);
+		templates.put(TemplateTreeTransformVisitor.PAGE_PROLOGUE, new Template("(title=${title})"));
+		from.setValue(template("example text", "title", "Home"));
 		tttv.enter(from, to);
 		assertEquals("(title=Home)example text", to.getValue().getBodyAsString());
 	}
