@@ -17,14 +17,14 @@ import org.stringtree.util.tree.SimpleTree;
 import org.stringtree.util.tree.Tree;
 
 public class GrindTraversalTest extends TestCase {
-	Context<Object> context;
+	Context<String> context;
 	SiteGrinder grinder;
 	MutableTree<Template> pages;
 	Context<Template> templates;
 	MutableTree<Tract> site;
 	
 	public void setUp() {
-		context = new MapContext<Object>();
+		context = new MapContext<String>();
 		grinder = new SiteGrinder();
 		pages = new SimpleTree<Template>();
 		templates = new MapContext<Template>();

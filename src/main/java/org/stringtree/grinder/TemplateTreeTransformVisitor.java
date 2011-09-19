@@ -8,6 +8,7 @@ import org.stringtree.Context;
 import org.stringtree.Tract;
 import org.stringtree.context.FallbackContext;
 import org.stringtree.solomon.Collector;
+import org.stringtree.solomon.Session;
 import org.stringtree.solomon.Template;
 import org.stringtree.solomon.collector.StringBuilderCollector;
 import org.stringtree.solomon.tree.TreeTemplater;
@@ -23,12 +24,14 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tem
 	
 	TreeTemplater templater;
 	Context<Template> templates;
-	Context<Object> context;
+	Context<String> context;
+	Session session;
 
-	public TemplateTreeTransformVisitor(Context<Template> templates, Context<Object> context) {
+	public TemplateTreeTransformVisitor(Context<Template> templates, Context<String> context, Session session) {
 		this.templates = templates;
 		this.context = context;
 		this.templater = new TreeTemplater(templates);
+		this.session = session;
 	}
 	
 	private void addIfNotNull(Collection<Object> collection, Object item) {
@@ -45,9 +48,9 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tem
 		addIfNotNull(combined, templates.get(PAGE_EPILOGUE));
 		
 		Collector collector = new StringBuilderCollector();
-		Context<Object> pageContext = new FallbackContext(/* page, */ context);
+		Context<String> pageContext = new FallbackContext<String>(page, context);
 //Diagnostics.dumpFetcher(pageContext, "page context");
-		templater.expand(pageContext, combined, collector);
+		templater.expand(page, pageContext, templates, collector, session);
 		Tract ret = new MapTract(collector.toString());
 		
 		String oldname = page.get(SiteGrinder.NAME);

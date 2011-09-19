@@ -59,8 +59,8 @@ public class SiteGrinder {
 			return;
 		}
 		
-		Context<Object> context = new MapContext<Object>();
-		MutableTree<Template> pages = new SimpleTree<Template>();
+		Context<String> context = new MapContext<String>();
+		MutableTree<Tract> pages = new SimpleTree<Tract>();
 		
 		File tpldir = new File(srcdir, "_templates");
 		Context<Template> templates = tpldir.exists() 
@@ -80,13 +80,13 @@ public class SiteGrinder {
 				e.printStackTrace();
 			}
 			
-		MutableTree<Tract> site = new SimpleTree<Tract>();
+		MutableTree<Template> site = new SimpleTree<Template>();
 		load(srcdir, pages, "", context);
 		grind(pages, templates, site, context);
 		save(destdir, site);
 	}
 
-	public void load(File srcdir, MutableTree<Template> pages, String parent, Context<Object> context) {
+	public void load(File srcdir, MutableTree<Template> pages, String parent, Context<String> context) {
 //		pages.setValue(new MapTract(srcdir.getName()));
 		Context<Template> src = new ConvertingContext<Template>(new TemplateFileConverter(srcdir));
 		File[] files = srcdir.listFiles();
@@ -101,42 +101,42 @@ public class SiteGrinder {
 
 			MutableTree<Template> child = new SimpleTree<Template>();
 			Template template;
-//			Tract tract = new MapTract();
-//			tract.put("page.key", key);
-//			tract.put(PARENT, parent);
-//			tract.put(FILE, file);
 			
 			if (file.isDirectory()) {
 				load(file, child, parent, context);
 				template = new Template();
-//				tract.put(TYPE, TYPE_FOLDER);
-//				tract.put(NAME, name);
+				template.put(TYPE, TYPE_FOLDER);
+				template.put(NAME, name);
 			} else if (name.endsWith(".tpl") || name.endsWith(".tract") || name.endsWith(".page")) {
 				template = src.get(name);
-//				tract.put(TYPE, TYPE_TEMPLATE);
-//				tract.put(NAME, key + ".html");
+				template.put(TYPE, TYPE_TEMPLATE);
+				template.put(NAME, key + ".html");
 			} else {
 				template = new Template();
-//				tract.put(TYPE, TYPE_BINARY);
-//				tract.put(NAME, name);
+				template.put(TYPE, TYPE_BINARY);
+				template.put(NAME, name);
 			}
+
+			template.put("page.key", key);
+			template.put(PARENT, parent);
+			template.put(FILE, file);
 
 			child.setValue(template);
 			pages.addChild(child);
 		}
 	}
 
-	public void load(File srcdir, MutableTree<Template> pages, Context<Object> context) {
+	public void load(File srcdir, MutableTree<Template> pages, Context<String> context) {
 		load(srcdir, pages, "", context);
 	}
 	
-	public void save(File destdir, MutableTree<Tract> site) {
-		TreeWalker<Tract> walker = new TreeWalker<Tract>(site);
+	public void save(File destdir, MutableTree<Template> site) {
+		TreeWalker<Template> walker = new TreeWalker<Template>(site);
 		walker.walkChildren(new StringFileWritingTreeVisitor(destdir));
 	}
 
 	public void grind(final Tree<Template> pages, final Context<Template> templates, final MutableTree<Tract> site, 
-			Context<Object> context) {
+			Context<String> context) {
 		if (null == pages) throw new IllegalArgumentException("cannot grind from null page source");
 		if (null == templates) throw new IllegalArgumentException("cannot grind from null template source");
 		if (null == site) throw new IllegalArgumentException("cannot grind to null site tree");

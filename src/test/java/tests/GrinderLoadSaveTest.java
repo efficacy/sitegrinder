@@ -19,12 +19,12 @@ import org.stringtree.util.tree.Tree;
 public class GrinderLoadSaveTest extends TestCase {
 	SiteGrinder grinder;
 	MutableTree<Template> pages;
-	Context<Object> context;
+	Context<String> context;
 	
 	public void setUp() {
 		grinder = new SiteGrinder();
 		pages = new SimpleTree<Template>();
-		context = new MapContext();
+		context = new MapContext<String>();
 	}
 	
 	public void testInitialConditions() {

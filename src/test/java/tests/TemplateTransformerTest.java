@@ -16,7 +16,7 @@ import org.stringtree.util.tree.SimpleTree;
 public class TemplateTransformerTest extends TestCase {
 	Solomon templater;
 	Context<Template> templates;
-	Context<Object> context;
+	Context<String> context;
 	TemplateTreeTransformVisitor tttv;
 	
 	MutableTree<Template> from;
@@ -24,7 +24,7 @@ public class TemplateTransformerTest extends TestCase {
 
 	public void setUp() {
 		templates = new MapContext<Template>();
-		context = new MapContext<Object>();
+		context = new MapContext<String>();
 		tttv = new TemplateTreeTransformVisitor(templates, context);
 		from = new SimpleTree<Template>();
 		to = new SimpleTree<Tract>();
@@ -47,8 +47,8 @@ public class TemplateTransformerTest extends TestCase {
 		assertEquals(content, to.getValue().getBodyAsString());
 	}
 
-	private Template template(String content, String... attributes) {
-		return new Template(content, new MapContext<String>(new LiteralMap<String,String>(attributes)));
+	private Template template(String content, Object... attributes) {
+		return new Template(content, new MapContext<String>(new LiteralMap<String,Object>(attributes)));
 	}
 	
 	public void testSimpleSubstitution() {
