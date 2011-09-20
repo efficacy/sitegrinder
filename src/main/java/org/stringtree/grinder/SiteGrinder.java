@@ -11,6 +11,7 @@ import org.stringtree.Tract;
 import org.stringtree.context.ConvertingContext;
 import org.stringtree.context.MapContext;
 import org.stringtree.converter.TemplateFileConverter;
+import org.stringtree.solomon.Session;
 import org.stringtree.solomon.Template;
 import org.stringtree.spec.SpecReader;
 import org.stringtree.util.SmartPathClassLoader;
@@ -60,7 +61,7 @@ public class SiteGrinder {
 		}
 		
 		Context<String> context = new MapContext<String>();
-		MutableTree<Tract> pages = new SimpleTree<Tract>();
+		MutableTree<Template> pages = new SimpleTree<Template>();
 		
 		File tpldir = new File(srcdir, "_templates");
 		Context<Template> templates = tpldir.exists() 
@@ -80,7 +81,7 @@ public class SiteGrinder {
 				e.printStackTrace();
 			}
 			
-		MutableTree<Template> site = new SimpleTree<Template>();
+		MutableTree<Tract> site = new SimpleTree<Tract>();
 		load(srcdir, pages, "", context);
 		grind(pages, templates, site, context);
 		save(destdir, site);
@@ -130,8 +131,8 @@ public class SiteGrinder {
 		load(srcdir, pages, "", context);
 	}
 	
-	public void save(File destdir, MutableTree<Template> site) {
-		TreeWalker<Template> walker = new TreeWalker<Template>(site);
+	public void save(File destdir, MutableTree<Tract> site) {
+		TreeWalker<Tract> walker = new TreeWalker<Tract>(site);
 		walker.walkChildren(new StringFileWritingTreeVisitor(destdir));
 	}
 
@@ -142,8 +143,9 @@ public class SiteGrinder {
 		if (null == site) throw new IllegalArgumentException("cannot grind to null site tree");
 
 		if (pages.isEmpty()) return;
+		Session session = new Session();
 		
 		TreeTransformer<Template,Tract> tx = new TreeTransformer<Template,Tract>(pages, site);
-		tx.transform(new TemplateTreeTransformVisitor(templates, context));
+		tx.transform(new TemplateTreeTransformVisitor(templates, context, session));
 	}
 }

@@ -7,6 +7,7 @@ import org.stringtree.Tract;
 import org.stringtree.context.MapContext;
 import org.stringtree.grinder.SiteGrinder;
 import org.stringtree.grinder.TemplateTreeTransformVisitor;
+import org.stringtree.solomon.Session;
 import org.stringtree.solomon.Solomon;
 import org.stringtree.solomon.Template;
 import org.stringtree.util.LiteralMap;
@@ -17,6 +18,7 @@ public class TemplateTransformerTest extends TestCase {
 	Solomon templater;
 	Context<Template> templates;
 	Context<String> context;
+	Session session;
 	TemplateTreeTransformVisitor tttv;
 	
 	MutableTree<Template> from;
@@ -25,7 +27,8 @@ public class TemplateTransformerTest extends TestCase {
 	public void setUp() {
 		templates = new MapContext<Template>();
 		context = new MapContext<String>();
-		tttv = new TemplateTreeTransformVisitor(templates, context);
+		session = new Session();
+		tttv = new TemplateTreeTransformVisitor(templates, context, session);
 		from = new SimpleTree<Template>();
 		to = new SimpleTree<Tract>();
 	}
