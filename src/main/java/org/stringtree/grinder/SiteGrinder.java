@@ -3,6 +3,7 @@ package org.stringtree.grinder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import org.stringtree.Context;
@@ -14,6 +15,9 @@ import org.stringtree.converter.TemplateFileConverter;
 import org.stringtree.solomon.Session;
 import org.stringtree.solomon.Template;
 import org.stringtree.spec.SpecReader;
+import org.stringtree.tract.FileTractReader;
+import org.stringtree.util.FileReadingUtils;
+import org.stringtree.util.LiteralMap;
 import org.stringtree.util.SmartPathClassLoader;
 import org.stringtree.util.StringUtils;
 import org.stringtree.util.tree.MutableTree;
@@ -28,14 +32,15 @@ public class SiteGrinder {
 	public static final String TYPE = "~type";
 	public static final String FILE = "~file";
 	public static final String PARENT = "~parent";
+	public static final String PAGE_KEY = "~key";
 
-	public static final String TYPE_TEMPLATE = "template";
+	public static final String TYPE_PAGE = "page";
 	public static final String TYPE_FOLDER = "folder";
 	public static final String TYPE_BINARY = "binary";
 
 	private static PrintStream log = System.out; 
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		if (args.length < 2) {
 			log.println("usage: SiteGrinder <from> <to>");
 			return;
@@ -50,7 +55,7 @@ public class SiteGrinder {
 		SiteGrinder.log = log;
 	}
 
-	public void grind(File srcdir, File destdir) {
+	public void grind(File srcdir, File destdir) throws IOException {
 		if (!srcdir.isDirectory() || !srcdir.canRead()) {
 			log.println("error: cannot read from folder " + srcdir.getAbsolutePath());
 			return;
@@ -65,8 +70,13 @@ public class SiteGrinder {
 		
 		File tpldir = new File(srcdir, "_templates");
 		Context<Template> templates = tpldir.exists() 
-			? new ConvertingContext<Template>(new TemplateFileConverter(tpldir, ".tract", ".tpl"))
+			? new ConvertingContext<Template>(new TemplateFileConverter(tpldir, new LiteralMap<String, Boolean>(
+					".tract", Boolean.TRUE,
+					".tpl", Boolean.FALSE)))
 		    : new MapContext<Template>();
+System.err.println("Grind: templates=" + templates);
+Template tpl = templates.get("prologue");
+System.err.println("Grind: prologue=" + tpl);
 		
 		File classdir = new File(srcdir, "_classes");
 		if (classdir.isDirectory()) {
@@ -86,54 +96,77 @@ public class SiteGrinder {
 		grind(pages, templates, site, context);
 		save(destdir, site);
 	}
+	
+	public static Template template(File file, String parent, String type) {
+		Template template = new Template();
 
-	public void load(File srcdir, MutableTree<Template> pages, String parent, Context<String> context) {
-		pages.setValue(new Template(srcdir.getName()));
-		Context<Template> src = new ConvertingContext<Template>(new TemplateFileConverter(srcdir, ".page"));
+		String name = file.getName();
+		int dot = name.indexOf('.');
+		String key = dot > 0 ? name.substring(0, dot) : name;
+		if (!StringUtils.isBlank(parent)) key = parent + "/" + key;
+		
+		template.put(TYPE, type);
+		template.put(NAME, name);
+		template.put(PAGE_KEY, key);
+		template.put(PARENT, parent);
+		template.put(FILE, file);
+		
+		return template;
+	}
+	
+	public static Template folder(File file, String parent) {
+		Template ret = template(file, parent, TYPE_FOLDER);
+		ret.setBody(file.getName());
+		return ret;
+	}
+	
+	public static Template page(File file, String parent, Context<String> context) throws IOException {
+		Template ret = template(file, parent, TYPE_PAGE);
+		FileTractReader.load(ret, file, true, context);
+		return ret;
+	}
+	
+	public static Template binary(File file, String parent) {
+		Template ret = template(file, parent, TYPE_FOLDER);
+		return ret;
+	}
+
+	public void load(File srcdir, MutableTree<Template> pages, String parent, Context<String> context) throws IOException {
+		pages.setValue(folder(srcdir, ""));
+		
 		File[] files = srcdir.listFiles();
 		for (File file : files) {
 			String name = file.getName();
 			if (name.startsWith(".") || name.startsWith("_")) {
 				continue;
 			}
+			
 			int dot = name.indexOf('.');
 			String key = dot > 0 ? name.substring(0, dot) : name;
 			if (!StringUtils.isBlank(parent)) key = parent + "/" + key; 
 
 			MutableTree<Template> child = new SimpleTree<Template>();
-			Template template;
 			
 			if (file.isDirectory()) {
+System.err.println("directory [" + file.getAbsolutePath() + "]");
 				load(file, child, parent, context);
-				template = new Template();
-				template.put(TYPE, TYPE_FOLDER);
-				template.put(NAME, name);
 			} else if (name.endsWith(".page")) {
-System.err.println("src=" + src);
-				template = src.get(stripSuffix(name));
-System.err.println("template=" + template);
-				template.put(TYPE, TYPE_TEMPLATE);
+System.err.println("page [" + file.getAbsolutePath() + "]");
+				Template template = page(file, parent, context);
+System.err.println("before setting name tpl=" + template);
 				template.put(NAME, key + ".html");
+System.err.println("after setting name tpl=" + template);
+				child.setValue(template);
 			} else {
-				template = new Template();
-				template.put(TYPE, TYPE_BINARY);
-				template.put(NAME, name);
+				Template template = binary(file, parent);
+				child.setValue(template);
 			}
 
-			template.put("page.key", key);
-			template.put(PARENT, parent);
-			template.put(FILE, file);
-
-			child.setValue(template);
 			pages.addChild(child);
 		}
 	}
-	
-	private String stripSuffix(String full) {
-		return full.substring(0, full.indexOf("."));
-	}
 
-	public void load(File srcdir, MutableTree<Template> pages, Context<String> context) {
+	public void load(File srcdir, MutableTree<Template> pages, Context<String> context) throws IOException {
 		load(srcdir, pages, "", context);
 	}
 	
@@ -144,6 +177,7 @@ System.err.println("template=" + template);
 
 	public void grind(final Tree<Template> pages, final Context<Template> templates, final MutableTree<Tract> site, 
 			Context<String> context) {
+System.err.println("grind templates=" + templates);
 		if (null == pages) throw new IllegalArgumentException("cannot grind from null page source");
 		if (null == templates) throw new IllegalArgumentException("cannot grind from null template source");
 		if (null == site) throw new IllegalArgumentException("cannot grind to null site tree");

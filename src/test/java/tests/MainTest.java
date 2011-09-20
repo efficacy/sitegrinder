@@ -3,6 +3,7 @@ package tests;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import org.stringtree.grinder.SiteGrinder;
@@ -39,44 +40,48 @@ public class MainTest extends TestCase {
 		}
 	}
 
-	private void grind(String dir) {
+	private void grind(String dir) throws IOException {
 		SiteGrinder.main(new String[] {"src/test/input/" + dir,"src/test/output/" + dir});
 	}
+
+	private void grind(String from, String to) throws IOException {
+		SiteGrinder.main(new String[] {from, to });
+	}
 	
-	public void testNoArgsGivesUsage() {
+	public void testNoArgsGivesUsage() throws IOException {
 		SiteGrinder.main(new String[] {});
 		assertTrue(buf.toString().contains("usage: SiteGrinder <from> <to>"));
 	}
 	
-	public void testSingleArgGivesUsage() {
+	public void testSingleArgGivesUsage() throws IOException {
 		SiteGrinder.main(new String[] {"thing"});
 		assertTrue(buf.toString().contains("usage: SiteGrinder <from> <to>"));
 	}
 	
-	public void testBadFromGivesError() {
+	public void testBadFromGivesError() throws IOException {
 		SiteGrinder.main(new String[] {"thing","wossname"});
 		assertTrue(buf.toString().contains("error: cannot read from folder"));
 	}
 	
-	public void testBadToGivesError() {
+	public void testBadToGivesError() throws IOException {
 		SiteGrinder.main(new String[] {"src/test/input/test1","wossname"});
 		assertTrue(buf.toString().contains("error: cannot write to folder"));
 	}
 	
-	public void testSingleLiteralPage() {
+	public void testSingleLiteralPage() throws IOException {
 		clearfiles("test1");
 		grind("test1");
 		assertTrue(outfile("test1/home.html").exists());
 	}
 
-	public void testMultipleLiteralPage() {
+	public void testMultipleLiteralPage() throws IOException {
 		clearfiles("test2");
 		grind("test2");
 		assertTrue(outfile("test2/index.html").exists());
 		assertTrue(outfile("test2/about.html").exists());
 	}
 
-	public void testHierarchy() {
+	public void testHierarchy() throws IOException {
 		clearfiles("test3");
 		grind("test3");
 		assertTrue(outfile("test3/index.html").exists());
@@ -84,25 +89,25 @@ public class MainTest extends TestCase {
 		assertTrue(outfile("test3/products/p2.html").exists());
 	}
 	
-	public void testTemplates() {
+	public void testTemplates() throws IOException {
 		clearfiles("test4");
 		grind("test4");
 		assertEquals("start[this is the home page]end", FileReadingUtils.readFile(outfile("test4/index.html")));
 	}
 	
-	public void testSiteSpec() {
+	public void testSiteSpec() throws IOException {
 		clearfiles("test5");
 		grind("test5");
 		assertEquals("I see 3 things", FileReadingUtils.readFile(outfile("test5/index.html")));
 	}
 	
-	public void testPluginClasses() {
+	public void testPluginClasses() throws IOException {
 		clearfiles("test6");
 		grind("test6");
 		assertEquals("hello 4, hello 5", FileReadingUtils.readFile(outfile("test6/index.html")));
 	}
 	
-	public void testCopyofOpaqueFiles() {
+	public void testCopyofOpaqueFiles() throws IOException {
 		clearfiles("test7");
 		grind("test7");
 		assertTrue(outfile("test7/index.html").exists());

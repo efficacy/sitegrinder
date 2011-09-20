@@ -1,6 +1,7 @@
 package tests;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -29,28 +30,28 @@ public class GrinderLoadSaveTest extends TestCase {
 		assertTrue(pages.isEmpty());
 	}
 	
-	public void testLoadEmpty() {
+	public void testLoadEmpty() throws IOException {
 		grinder.load(new File("src/test/input/empty"), pages, context);
 		assertFalse(pages.isEmpty());
 		assertEquals("empty", pages.getValue().getBodyAsString());
 		assertTrue(pages.getChildren().isEmpty());
 	}
 	
-	public void testSingleFlatTpl() {
+	public void testSingleFlatTpl() throws IOException {
 		grinder.load(new File("src/test/input/test1"), pages, context);
 		assertFalse(pages.isEmpty());
 		assertEquals("test1", pages.getValue().getBodyAsString());
 		assertEquals(1, pages.getChildren().size());
 	}
 	
-	public void testMultipleFlatTract() {
+	public void testMultipleFlatTract() throws IOException {
 		grinder.load(new File("src/test/input/test2"), pages, context);
 		assertFalse(pages.isEmpty());
 		assertEquals("test2", pages.getValue().getBodyAsString());
 		assertEquals(2, pages.getChildren().size());
 	}
 	
-	public void testMixedHierarchy() {
+	public void testMixedHierarchy() throws IOException {
 		grinder.load(new File("src/test/input/test3"), pages, context);
 		assertFalse(pages.isEmpty());
 		assertEquals("test3", pages.getValue().getBodyAsString());

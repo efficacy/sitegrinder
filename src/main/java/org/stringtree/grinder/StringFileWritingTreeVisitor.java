@@ -34,7 +34,7 @@ public class StringFileWritingTreeVisitor implements TreeVisitor<Tract> {
 			File file = new File(current.peek(), name);
 			file.mkdirs();
 			current.push(file);
-		} else if (SiteGrinder.TYPE_TEMPLATE.equals(type)) {
+		} else if (SiteGrinder.TYPE_PAGE.equals(type)) {
 			try {
 				if (StringUtils.isBlank(name)) {
 					name = page.getBodyAsString();
