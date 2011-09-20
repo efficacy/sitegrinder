@@ -65,7 +65,7 @@ public class SiteGrinder {
 		
 		File tpldir = new File(srcdir, "_templates");
 		Context<Template> templates = tpldir.exists() 
-			? new ConvertingContext<Template>(new TemplateFileConverter(tpldir))
+			? new ConvertingContext<Template>(new TemplateFileConverter(tpldir, ".tract", ".tpl"))
 		    : new MapContext<Template>();
 		
 		File classdir = new File(srcdir, "_classes");
@@ -88,8 +88,8 @@ public class SiteGrinder {
 	}
 
 	public void load(File srcdir, MutableTree<Template> pages, String parent, Context<String> context) {
-//		pages.setValue(new MapTract(srcdir.getName()));
-		Context<Template> src = new ConvertingContext<Template>(new TemplateFileConverter(srcdir));
+		pages.setValue(new Template(srcdir.getName()));
+		Context<Template> src = new ConvertingContext<Template>(new TemplateFileConverter(srcdir, ".page"));
 		File[] files = srcdir.listFiles();
 		for (File file : files) {
 			String name = file.getName();
@@ -108,8 +108,10 @@ public class SiteGrinder {
 				template = new Template();
 				template.put(TYPE, TYPE_FOLDER);
 				template.put(NAME, name);
-			} else if (name.endsWith(".tpl") || name.endsWith(".tract") || name.endsWith(".page")) {
-				template = src.get(name);
+			} else if (name.endsWith(".page")) {
+System.err.println("src=" + src);
+				template = src.get(stripSuffix(name));
+System.err.println("template=" + template);
 				template.put(TYPE, TYPE_TEMPLATE);
 				template.put(NAME, key + ".html");
 			} else {
@@ -125,6 +127,10 @@ public class SiteGrinder {
 			child.setValue(template);
 			pages.addChild(child);
 		}
+	}
+	
+	private String stripSuffix(String full) {
+		return full.substring(0, full.indexOf("."));
 	}
 
 	public void load(File srcdir, MutableTree<Template> pages, Context<String> context) {

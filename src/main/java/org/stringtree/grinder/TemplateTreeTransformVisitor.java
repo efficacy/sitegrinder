@@ -41,6 +41,8 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tem
 	protected boolean visit(Tree<Template> from, MutableTree<Tract> to) {
 		Template page = from.getValue();
 		if (null == page) return false;
+		
+System.err.println("visit page=" + page);
 
 		List<Object> combined = new ArrayList<Object>();
 		addIfNotNull(combined, templates.get(PAGE_PROLOGUE));
@@ -49,12 +51,11 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tem
 		
 		Collector collector = new StringBuilderCollector();
 		Context<String> pageContext = new FallbackContext<String>(page, context);
-//Diagnostics.dumpFetcher(pageContext, "page context");
 		templater.expand(page, pageContext, templates, collector, session);
 		Tract ret = new MapTract(collector.toString());
 		
 		String oldname = page.get(SiteGrinder.NAME);
-		String newname = oldname.replaceAll("\\.(tract|tpl)$", ".html");
+		String newname = oldname.replaceAll("\\.page$", ".html");
 		ret.put(SiteGrinder.NAME, newname);
 		ret.put(SiteGrinder.TYPE, page.get(SiteGrinder.TYPE));
 		ret.put(SiteGrinder.FILE, page.get(SiteGrinder.FILE));
