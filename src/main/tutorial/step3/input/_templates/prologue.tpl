@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>${site.name}: ${page.title}</title>
+  <title>${site_name}: ${page_title}</title>
 </head>
 <body>
-<h1>${page.title}</h1>
+<h1>${page_title}</h1>

@@ -27,23 +27,11 @@ public class GrindTraversalTest extends TestCase {
 		context = new MapContext<String>();
 		grinder = new SiteGrinder();
 		pages = new SimpleTree<Template>();
-		pages.setValue(folder("brasspyramid.com"));
+		pages.setValue(Helper.folder("brasspyramid.com"));
 		templates = new MapContext<Template>();
 		site = new SimpleTree<Tract>();
 	}
 	
-	private Template folder(String name) {
-		return SiteGrinder.template("", SiteGrinder.TYPE_FOLDER, name, name);
-	}
-	
-	private Template page(String body) {
-		return SiteGrinder.template("", SiteGrinder.TYPE_PAGE, body + ".page", body);
-	}
-	
-	private Template page(String body, String parent) {
-		return SiteGrinder.template(parent, SiteGrinder.TYPE_PAGE, body + ".page", body);
-	}
-
 	public void testNullPages() {
 		try {
 			grinder.grind(null, templates, site, context);
@@ -79,7 +67,7 @@ public class GrindTraversalTest extends TestCase {
 	
 	@SuppressWarnings("unchecked")
 	public void testSingleSimplePage() {
-		pages.addChild(new SimpleTree<Template>(page("hello")));
+		pages.addChild(new SimpleTree<Template>(Helper.page("hello")));
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
 		assertEquals("brasspyramid.com", site.getValue().getBodyAsString());
@@ -90,10 +78,9 @@ public class GrindTraversalTest extends TestCase {
 		assertEquals("hello", kid1.getValue().getBodyAsString());
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void testMultipleSimplePage() {
-		pages.addChild(new SimpleTree<Template>(page("hello")));
-		pages.addChild(new SimpleTree<Template>(page("goodbye")));
+		pages.addChild(new SimpleTree<Template>(Helper.page("hello")));
+		pages.addChild(new SimpleTree<Template>(Helper.page("goodbye")));
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
 		assertEquals("brasspyramid.com", site.getValue().getBodyAsString());
@@ -108,9 +95,9 @@ public class GrindTraversalTest extends TestCase {
 	}
 	
 	public void testHierarchy() {
-		MutableTree<Template> child = new SimpleTree<Template>(folder("hello"));
+		MutableTree<Template> child = new SimpleTree<Template>(Helper.folder("hello"));
 		pages.addChild(child);
-		Template page = page("goodbye", "hello");
+		Template page = Helper.page("goodbye", "hello");
 		child.addChild(new SimpleTree<Template>(page));
 		grinder.grind(pages, templates, site, context);
 		

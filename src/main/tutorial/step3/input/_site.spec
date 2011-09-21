@@ -1,3 +1,3 @@
-site.name=Site Grinder Tutorial
-site.author=Your Name here
-site.year=2011
+site_name=Site Grinder Tutorial
+site_author=Your Name here
+site_year=2011

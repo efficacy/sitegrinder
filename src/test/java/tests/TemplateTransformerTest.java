@@ -56,29 +56,33 @@ public class TemplateTransformerTest extends TestCase {
 	
 	public void testSimpleSubstitution() {
 		context.put("text", "Frank");
-		from.setValue(template("example ${text}"));
+		Template template = Helper.page("example ${text}");
+		from.setValue(template);
 		tttv.enter(from, to);
 		assertEquals("example Frank", to.getValue().getBodyAsString());
 	}
 	
 	public void testTractSubstitution() {
-		from.setValue(template("example ${text}", "text", "Frank"));
+		Template template = Helper.page("example ${text}");
+		template.put("text", "Frank");
+		from.setValue(template);
 		tttv.enter(from, to);
 		assertEquals("example Frank", to.getValue().getBodyAsString());
 	}
 	
 	public void testSubTemplate() {
 		templates.put("text", new Template("Margaret"));
-		from.setValue(template("example ${*text}"));
+		from.setValue(Helper.page("example ${*text}"));
 		tttv.enter(from, to);
 		assertEquals("example Margaret", to.getValue().getBodyAsString());
 	}
 	
 	public void testSubTract() {
-		templates.put("text", template("${name}", "name", "Katherine"));
+		Template template = template("${name}", "name", "Katherine");
+		templates.put("text", template);
 		context.put("name", "Elizabeth");
 		
-		from.setValue(template("${name} ${*text} ${name}"));
+		from.setValue(Helper.page("${name} ${*text} ${name}"));
 		tttv.enter(from, to);
 		assertEquals("Elizabeth Katherine Elizabeth", to.getValue().getBodyAsString());
 	}
@@ -86,14 +90,16 @@ public class TemplateTransformerTest extends TestCase {
 	public void testHeaderFooter() {
 		templates.put(TemplateTreeTransformVisitor.PAGE_PROLOGUE, new Template("Before["));
 		templates.put(TemplateTreeTransformVisitor.PAGE_EPILOGUE, new Template("]After"));
-		from.setValue(template("example text"));
+		from.setValue(Helper.page("example text"));
 		tttv.enter(from, to);
 		assertEquals("Before[example text]After", to.getValue().getBodyAsString());
 	}
 	
 	public void testHeaderFooterSubstitution() {
 		templates.put(TemplateTreeTransformVisitor.PAGE_PROLOGUE, new Template("(title=${title})"));
-		from.setValue(template("example text", "title", "Home"));
+		Template template = Helper.page("example text");
+		template.put("title", "Home");
+		from.setValue(template);
 		tttv.enter(from, to);
 		assertEquals("(title=Home)example text", to.getValue().getBodyAsString());
 	}

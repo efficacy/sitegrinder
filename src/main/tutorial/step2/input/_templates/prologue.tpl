@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Site Grinder Tutorial: ${page.title}</title>
+  <title>Site Grinder Tutorial: ${page_title}</title>
 </head>
 <body>
-<h1>${page.title}</h1>
+<h1>${page_title}</h1>
