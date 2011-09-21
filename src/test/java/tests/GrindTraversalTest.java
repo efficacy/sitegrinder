@@ -1,7 +1,7 @@
 package tests;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import junit.framework.TestCase;
 
@@ -27,10 +27,23 @@ public class GrindTraversalTest extends TestCase {
 		context = new MapContext<String>();
 		grinder = new SiteGrinder();
 		pages = new SimpleTree<Template>();
+		pages.setValue(folder("brasspyramid.com"));
 		templates = new MapContext<Template>();
 		site = new SimpleTree<Tract>();
 	}
 	
+	private Template folder(String name) {
+		return SiteGrinder.template("", SiteGrinder.TYPE_FOLDER, name, name);
+	}
+	
+	private Template page(String body) {
+		return SiteGrinder.template("", SiteGrinder.TYPE_PAGE, body + ".page", body);
+	}
+	
+	private Template page(String body, String parent) {
+		return SiteGrinder.template(parent, SiteGrinder.TYPE_PAGE, body + ".page", body);
+	}
+
 	public void testNullPages() {
 		try {
 			grinder.grind(null, templates, site, context);
@@ -59,55 +72,59 @@ public class GrindTraversalTest extends TestCase {
 	}
 	
 	public void testEmpty() {
+		pages.clear();
 		grinder.grind(pages, templates, site, context);
 		assertTrue(site.isEmpty());
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void testSingleSimplePage() {
-//		pages.setValue(new MapTract("brasspyramid.com"));
-		pages.addChild(new SimpleTree<Template>(new Template("hello")));
+		pages.addChild(new SimpleTree<Template>(page("hello")));
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
 		assertEquals("brasspyramid.com", site.getValue().getBodyAsString());
-		assertTrue(new Checklist<Tree<Tract>>(
-				new SimpleTree<Tract>(new MapTract("hello")) 
-			).check(site.getChildren()));
+		
+		Collection<Tree<Tract>> children = site.getChildren();
+		assertEquals(1, children.size());
+		Tree<Tract> kid1 = children.iterator().next();
+		assertEquals("hello", kid1.getValue().getBodyAsString());
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void testMultipleSimplePage() {
-//		pages.setValue(new MapTract("brasspyramid.com"));
-		pages.addChild(new SimpleTree<Template>(new Template("hello")));
-		pages.addChild(new SimpleTree<Template>(new Template("goodbye")));
+		pages.addChild(new SimpleTree<Template>(page("hello")));
+		pages.addChild(new SimpleTree<Template>(page("goodbye")));
 		grinder.grind(pages, templates, site, context);
 		assertFalse(site.isEmpty());
 		assertEquals("brasspyramid.com", site.getValue().getBodyAsString());
-		assertTrue(new Checklist<Tree<Tract>>(
-				new SimpleTree<Tract>(new MapTract("hello")), 
-				new SimpleTree<Tract>(new MapTract("goodbye")) 
-			).check(site.getChildren()));
+
+		Collection<Tree<Tract>> children = site.getChildren();
+		assertEquals(2, children.size());
+		Iterator<Tree<Tract>> iterator = children.iterator();
+		Tree<Tract> kid1 = iterator.next();
+		assertEquals("hello", kid1.getValue().getBodyAsString());
+		Tree<Tract> kid2 = iterator.next();
+		assertEquals("goodbye", kid2.getValue().getBodyAsString());
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void testHierarchy() {
-//		pages.setValue(new MapTract("brasspyramid.com"));
-		MutableTree<Template> child = new SimpleTree<Template>(new Template("hello"));
+		MutableTree<Template> child = new SimpleTree<Template>(folder("hello"));
 		pages.addChild(child);
-		child.addChild(new SimpleTree<Template>(new Template("goodbye")));
+		Template page = page("goodbye", "hello");
+		child.addChild(new SimpleTree<Template>(page));
 		grinder.grind(pages, templates, site, context);
+		
 		assertFalse(site.isEmpty());
 		assertEquals("brasspyramid.com", site.getValue().getBodyAsString());
-		assertTrue(new Checklist<Tree<Tract>>(
-				new SimpleTree<Tract>(new MapTract("hello"), children("goodbye")) 
-		).check(site.getChildren()));
-	}
-
-	private Collection<Tree<Tract>> children(String... strings) {
-		Collection<Tree<Tract>> ret = new ArrayList<Tree<Tract>>();
-		for (String string : strings) {
-			ret.add(new SimpleTree<Tract>(new MapTract(string)));
-		}
-		return ret;
+		
+		Collection<Tree<Tract>> children = site.getChildren();
+		assertEquals(1, children.size());
+		Tree<Tract> kid1 = children.iterator().next();
+		assertEquals("hello", kid1.getValue().getBodyAsString());
+		
+		Collection<Tree<Tract>> grandchildren = kid1.getChildren();
+		assertEquals(1, grandchildren.size());
+		Tree<Tract> kid2 = grandchildren.iterator().next();
+		assertEquals("goodbye", kid2.getValue().getBodyAsString());
 	}
 }	

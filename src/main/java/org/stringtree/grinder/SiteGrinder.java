@@ -16,7 +16,6 @@ import org.stringtree.solomon.Session;
 import org.stringtree.solomon.Template;
 import org.stringtree.spec.SpecReader;
 import org.stringtree.tract.FileTractReader;
-import org.stringtree.util.FileReadingUtils;
 import org.stringtree.util.LiteralMap;
 import org.stringtree.util.SmartPathClassLoader;
 import org.stringtree.util.StringUtils;
@@ -74,9 +73,6 @@ public class SiteGrinder {
 					".tract", Boolean.TRUE,
 					".tpl", Boolean.FALSE)))
 		    : new MapContext<Template>();
-System.err.println("Grind: templates=" + templates);
-Template tpl = templates.get("prologue");
-System.err.println("Grind: prologue=" + tpl);
 		
 		File classdir = new File(srcdir, "_classes");
 		if (classdir.isDirectory()) {
@@ -97,10 +93,14 @@ System.err.println("Grind: prologue=" + tpl);
 		save(destdir, site);
 	}
 	
-	public static Template template(File file, String parent, String type) {
-		Template template = new Template();
+	public static Template template(File file, String parent, String type, String body) {
+		Template template = template(parent, type, file.getName(), body);
+		template.put(FILE, file);
+		return template;
+	}
 
-		String name = file.getName();
+	public static Template template(String parent, String type, String name, String body) {
+		Template template = new Template();
 		int dot = name.indexOf('.');
 		String key = dot > 0 ? name.substring(0, dot) : name;
 		if (!StringUtils.isBlank(parent)) key = parent + "/" + key;
@@ -109,26 +109,25 @@ System.err.println("Grind: prologue=" + tpl);
 		template.put(NAME, name);
 		template.put(PAGE_KEY, key);
 		template.put(PARENT, parent);
-		template.put(FILE, file);
-		
+		if (null != body) template.setBody(body);
+
 		return template;
 	}
 	
 	public static Template folder(File file, String parent) {
-		Template ret = template(file, parent, TYPE_FOLDER);
+		Template ret = template(file, parent, TYPE_FOLDER, file.getName());
 		ret.setBody(file.getName());
 		return ret;
 	}
 	
 	public static Template page(File file, String parent, Context<String> context) throws IOException {
-		Template ret = template(file, parent, TYPE_PAGE);
+		Template ret = template(file, parent, TYPE_PAGE, null);
 		FileTractReader.load(ret, file, true, context);
 		return ret;
 	}
 	
 	public static Template binary(File file, String parent) {
-		Template ret = template(file, parent, TYPE_FOLDER);
-		return ret;
+		return template(file, parent, TYPE_BINARY, null);
 	}
 
 	public void load(File srcdir, MutableTree<Template> pages, String parent, Context<String> context) throws IOException {
@@ -148,14 +147,10 @@ System.err.println("Grind: prologue=" + tpl);
 			MutableTree<Template> child = new SimpleTree<Template>();
 			
 			if (file.isDirectory()) {
-System.err.println("directory [" + file.getAbsolutePath() + "]");
 				load(file, child, parent, context);
 			} else if (name.endsWith(".page")) {
-System.err.println("page [" + file.getAbsolutePath() + "]");
 				Template template = page(file, parent, context);
-System.err.println("before setting name tpl=" + template);
 				template.put(NAME, key + ".html");
-System.err.println("after setting name tpl=" + template);
 				child.setValue(template);
 			} else {
 				Template template = binary(file, parent);
@@ -177,7 +172,6 @@ System.err.println("after setting name tpl=" + template);
 
 	public void grind(final Tree<Template> pages, final Context<Template> templates, final MutableTree<Tract> site, 
 			Context<String> context) {
-System.err.println("grind templates=" + templates);
 		if (null == pages) throw new IllegalArgumentException("cannot grind from null page source");
 		if (null == templates) throw new IllegalArgumentException("cannot grind from null template source");
 		if (null == site) throw new IllegalArgumentException("cannot grind to null site tree");

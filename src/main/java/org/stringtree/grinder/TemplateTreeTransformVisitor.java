@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.stringtree.Context;
 import org.stringtree.Tract;
+import org.stringtree.context.ContextEntry;
 import org.stringtree.context.FallbackContext;
 import org.stringtree.solomon.Collector;
 import org.stringtree.solomon.Session;
@@ -49,16 +50,12 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tem
 		String name = page.get(SiteGrinder.NAME);
 		if (null == name) return false;
 		
-System.err.println("visit page=" + page);
-
 		Collection<TokenSource> combined = new ArrayList<TokenSource>();
 		Template prologue = templates.get(PAGE_PROLOGUE);
-System.err.println("visit, prologue=" + prologue);
 		addIfNotNull(combined, prologue);
 		addIfNotNull(combined, templater.applyPrologueEpilogue(page.get(SiteGrinder.PARENT), page));
 		Template epilogue = templates.get(PAGE_EPILOGUE);
 		addIfNotNull(combined, epilogue);
-System.err.println("visit, combined=" + combined);
 		
 		Collector collector = new StringBuilderCollector();
 		Context<String> pageContext = new FallbackContext<String>(page, context);
@@ -66,9 +63,9 @@ System.err.println("visit, combined=" + combined);
 		Tract ret = new MapTract(collector.toString());
 		
 		String newname = name.replaceAll("\\.page$", ".html");
-		ret.put(SiteGrinder.NAME, newname);
-		ret.put(SiteGrinder.TYPE, page.get(SiteGrinder.TYPE));
-		ret.put(SiteGrinder.FILE, page.get(SiteGrinder.FILE));
+		for (ContextEntry<String> entry : page) {
+			ret.put(entry.getKey(), entry.getObjectValue());
+		}
 		ret.put(SiteGrinder.NAME, newname);
 		to.setValue(ret);
 		return true;

@@ -34,7 +34,7 @@ System.err.println("Integrator.getObject returning " + next);
 	}
 	
 	@Override public String toString() {
-		return Integer.toString(current);
+		return Integer.toString(nextValue());
 	}
 
 	private Integer nextValue() {
