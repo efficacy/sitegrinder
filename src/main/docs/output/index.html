@@ -1,8 +1,8 @@
-<html><head><title>Stringtree Site Grinder: </title>
+<html><head><title>Stringtree Site Grinder: Home</title>
 <link rel='StyleSheet' href="css/style.css" TYPE="text/css"/>
 </head>
 <body><div id="navbar">
- 
+ <a href=".html"></a>
 </div>
 <p>
 Stringtree Site Grinder is a tool for managing web sites. 
@@ -26,7 +26,10 @@ can process a simple page definition</p>
 
 <br/><span class="filename">index.page
 </span>
-<div class="example"></div><br/>
+<div class="example">page.title=Index
+
+&lt;h1&gt;Hello from Stringtree Site Grinder&lt;/h1&gt;
+</div><br/>
 
 Note that there is a blank line between the page title definition and the HTML content of the page. 
 This is important, as it allows the system to tell the difference between <i>header</i> lines (which do 
@@ -44,7 +47,8 @@ but it is a simple way to start.</p>
 to see your new (if minimal) web page with it's hello message.</p>
 
 <br/><div class="outfilename">index.html</div>
-<div class="outexample"></div><br/>
+<div class="outexample">&lt;h1&gt;Hello from Stringtree Site Grinder&lt;/h1&gt;
+</div><br/>
 
 </li>
 </ol>
@@ -61,10 +65,17 @@ So far this does not offer any benefits compared with just editing HTML pages, s
 
 <br/><span class="filename">_templates/prologue.tpl
 </span>
-<div class="example"></div><br/>
+<div class="example">&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Site Grinder Tutorial: ${page_title}&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;${page_title}&lt;/h1&gt;
+</div><br/>
 <br/><span class="filename">_templates/epilogue.tpl
 </span>
-<div class="example"></div><br/>
+<div class="example">&lt;/body&gt;
+&lt;/html&gt;</div><br/>
 
 	</li>
 	<li>"Grind" the web site as above: <tt>java -jar sitegrinder.jar input output</tt>
@@ -73,10 +84,18 @@ So far this does not offer any benefits compared with just editing HTML pages, s
 Refresh your web browser to see your updated web page with it's page title.</p>
 
 <br/><div class="outfilename">index.html</div>
-<div class="outexample"></div><br/>
+<div class="outexample">&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Site Grinder Tutorial: Home&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Home&lt;/h1&gt;
+&lt;p&gt;Hello from Stringtree Site Grinder&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div><br/>
 
 </li>
 </ol>
-<hr/><i>Copyright &copy; Frank Carver Wed Sep 21 14:30:48 BST 2011</i>
+<hr/><i>Copyright &copy; Frank Carver 2011</i>
 </body>
 </html>

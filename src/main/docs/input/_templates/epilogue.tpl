@@ -1,3 +1,3 @@
-<hr/><i>Copyright &copy; ${site_author} ${site_date|df_year.format}</i>
+<hr/><i>Copyright &copy; ${site_author} ${df_year.format(site_date)}</i>
 </body>
 </html>
