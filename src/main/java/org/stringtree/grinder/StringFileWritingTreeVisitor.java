@@ -9,7 +9,6 @@ import java.nio.channels.FileChannel;
 import java.util.Stack;
 
 import org.stringtree.Tract;
-import org.stringtree.solomon.Template;
 import org.stringtree.util.FileWritingUtils;
 import org.stringtree.util.StringUtils;
 import org.stringtree.util.tree.Tree;

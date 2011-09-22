@@ -6,10 +6,10 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import junit.framework.TestCase;
+
 import org.stringtree.grinder.SiteGrinder;
 import org.stringtree.util.FileReadingUtils;
-
-import junit.framework.TestCase;
 
 public class MainTest extends TestCase {
 	ByteArrayOutputStream buf;
@@ -42,10 +42,6 @@ public class MainTest extends TestCase {
 
 	private void grind(String dir) throws IOException {
 		SiteGrinder.main(new String[] {"src/test/input/" + dir,"src/test/output/" + dir});
-	}
-
-	private void grind(String from, String to) throws IOException {
-		SiteGrinder.main(new String[] {from, to });
 	}
 	
 	public void testNoArgsGivesUsage() throws IOException {

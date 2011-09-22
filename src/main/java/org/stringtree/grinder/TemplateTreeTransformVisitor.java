@@ -58,7 +58,7 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tem
 		addIfNotNull(combined, epilogue);
 		
 		Collector collector = new StringBuilderCollector();
-		Context<String> pageContext = new FallbackContext<String>(page, context);
+		@SuppressWarnings("unchecked") Context<String> pageContext = new FallbackContext<String>(page, context);
 		templater.expandAll((Collection<TokenSource>)combined, pageContext, templates, collector, session);
 		Tract ret = new MapTract(collector.toString());
 		

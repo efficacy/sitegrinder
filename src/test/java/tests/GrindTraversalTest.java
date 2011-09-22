@@ -10,8 +10,6 @@ import org.stringtree.Tract;
 import org.stringtree.context.MapContext;
 import org.stringtree.grinder.SiteGrinder;
 import org.stringtree.solomon.Template;
-import org.stringtree.tract.MapTract;
-import org.stringtree.util.testing.Checklist;
 import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.SimpleTree;
 import org.stringtree.util.tree.Tree;
@@ -65,7 +63,6 @@ public class GrindTraversalTest extends TestCase {
 		assertTrue(site.isEmpty());
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void testSingleSimplePage() {
 		pages.addChild(new SimpleTree<Template>(Helper.page("hello")));
 		grinder.grind(pages, templates, site, context);
