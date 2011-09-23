@@ -31,7 +31,7 @@ public class SiteGrinder {
 	public static final String TYPE = "~type";
 	public static final String FILE = "~file";
 	public static final String PARENT = "~parent";
-	public static final String PAGE_KEY = "~key";
+	public static final String PAGE_KEY = "key";
 
 	public static final String TYPE_PAGE = "page";
 	public static final String TYPE_FOLDER = "folder";

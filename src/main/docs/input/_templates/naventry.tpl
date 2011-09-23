@@ -1,1 +1,1 @@
- ${this.key.equals(page.key) ? *navlabel : *navlink}
+ ${this.key.equals(key) ? *navlabel : *navlink}

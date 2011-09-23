@@ -1,5 +1,4 @@
-pages#= index=Home
-pages#= contact=Contact Us
+pages%= { "index":"Home" , "contact":"Contact Us" }
 
 <div id="navbar">
 ${pages*naventry}
