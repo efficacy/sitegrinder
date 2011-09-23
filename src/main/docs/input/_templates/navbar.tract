@@ -1,5 +1,4 @@
-pages%= { "index":"Home" , "contact":"Contact Us" }
 
 <div id="navbar">
-${pages*naventry}
+${pagenames*naventry}
 </div>

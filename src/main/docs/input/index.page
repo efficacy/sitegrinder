@@ -35,7 +35,7 @@ but it is a simple way to start.</p>
 	<li>Enter <tt>java -jar sitegrinder.jar input output</tt>
 
 <p>A new file <tt>index.html</tt> will appear in the <tt>output</tt> directory. Open the file in a web browser 
-to see your new (if minimal) web page with it's hello message.</p>
+to see your new (if minimal) web page with its hello message.</p>
 
 ${filename='index.html'}${filename*outfile}
 
@@ -59,7 +59,7 @@ ${filename='_templates/epilogue.tpl'}${filename*tutfile}
 	<li>"Grind" the web site as above: <tt>java -jar sitegrinder.jar input output</tt>
 
 <p>The file <tt>index.html</tt> will be re-generated, this time it will automatically pick up the common prologue and epilogue. 
-Refresh your web browser to see your updated web page with it's page title.</p>
+Refresh your web browser to see your updated web page with its page title.</p>
 
 ${filename='index.html'}${filename*outfile}
 
