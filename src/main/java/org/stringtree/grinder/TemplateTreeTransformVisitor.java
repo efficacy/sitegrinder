@@ -2,18 +2,18 @@ package org.stringtree.grinder;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
-import org.stringtree.Context;
+import org.rack4java.Context;
+import org.rack4java.context.FallbackContext;
 import org.stringtree.Tract;
-import org.stringtree.context.ContextEntry;
-import org.stringtree.context.FallbackContext;
-import org.stringtree.solomon.Collector;
 import org.stringtree.solomon.Session;
 import org.stringtree.solomon.Template;
 import org.stringtree.solomon.collector.StringBuilderCollector;
 import org.stringtree.solomon.tokenstream.TokenSource;
 import org.stringtree.solomon.tree.TreeTemplater;
 import org.stringtree.tract.MapTract;
+import org.stringtree.util.Collector;
 import org.stringtree.util.tree.MutableTree;
 import org.stringtree.util.tree.Tree;
 
@@ -63,10 +63,10 @@ public class TemplateTreeTransformVisitor extends SimpleTreeTransformVisitor<Tem
 		Tract ret = new MapTract(collector.toString());
 		
 		String newname = name.replaceAll("\\.page$", ".html");
-		for (ContextEntry<String> entry : page) {
-			ret.put(entry.getKey(), entry.getObjectValue());
+		for (Map.Entry<String, Object> entry : page) {
+			ret.with(entry.getKey(), entry.getValue());
 		}
-		ret.put(SiteGrinder.NAME, newname);
+		ret.with(SiteGrinder.NAME, newname);
 		to.setValue(ret);
 		return true;
 	}

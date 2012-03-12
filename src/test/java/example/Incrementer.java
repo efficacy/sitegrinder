@@ -1,12 +1,13 @@
 package example;
 
 import java.util.Iterator;
+import java.util.Map;
 
-import org.stringtree.context.ContextEntry;
+import org.rack4java.context.ContextEntry;
 import org.stringtree.context.ReadOnlyContext;
 import org.stringtree.util.IntegerNumberUtils;
 
-public class Incrementer extends ReadOnlyContext<Integer> implements Iterator<ContextEntry<Integer>> {
+public class Incrementer extends ReadOnlyContext<Integer> implements Iterator<Map.Entry<String,Object>> {
 	private int current;
 
 	public Incrementer(int start) {
@@ -41,8 +42,8 @@ System.err.println("Integrator.getObject returning " + next);
 		return current++;
 	}
 
-	@Override public ContextEntry<Integer> next() {
-		return new ContextEntry<Integer>("value", nextValue());
+	@Override public Map.Entry<String,Object> next() {
+		return new ContextEntry<Object>("value", nextValue());
 	}
 
 	@Override public boolean hasNext() {
@@ -53,7 +54,7 @@ System.err.println("Integrator.getObject returning " + next);
 		throw new UnsupportedOperationException("can't remove from the set of all integers");
 	}
 
-	@Override public Iterator<ContextEntry<Integer>> iterator() {
+	@Override public Iterator<Map.Entry<String,Object>> iterator() {
 		return this;
 	}
 }

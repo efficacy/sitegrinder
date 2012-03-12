@@ -3,12 +3,13 @@ package tests;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.stringtree.Context;
-import org.stringtree.context.MapContext;
+import org.rack4java.Context;
+import org.rack4java.context.MapContext;
 import org.stringtree.grinder.SiteGrinder;
 import org.stringtree.solomon.Template;
 import org.stringtree.util.tree.MutableTree;
@@ -56,16 +57,15 @@ public class GrinderLoadSaveTest extends TestCase {
 		assertFalse(pages.isEmpty());
 		assertEquals("test3", pages.getValue().getBodyAsString());
 
-		Collection<Tree<Template>> children = pages.getChildren();
-		assertEquals(2, children.size());
+		Map<String, Tree<Template>> kids = new HashMap<String, Tree<Template>>();
+		for (Tree<Template> child : pages.getChildren()) {
+			kids.put(child.getValue().get(SiteGrinder.TYPE), child);
+		}
+		assertEquals(2, kids.size());
+		assertEquals("products", kids.get("folder").getValue().get(SiteGrinder.NAME));
+		assertEquals("What is this?", kids.get("page").getValue().getBodyAsString());
 
-		Iterator<Tree<Template>> it = children.iterator();
-		Tree<Template> c1 = it.next();
-		Tree<Template> c2 = it.next();
-		assertEquals("products", c2.getValue().get(SiteGrinder.NAME));
-		assertEquals("What is this?", c1.getValue().getBodyAsString());
-
-		Collection<Tree<Template>> grandchildren = c2.getChildren();
+		Collection<Tree<Template>> grandchildren = kids.get("folder").getChildren();
 		assertEquals(2, grandchildren.size());
 	}
 }

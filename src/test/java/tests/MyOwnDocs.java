@@ -28,8 +28,10 @@ public class MyOwnDocs extends TestCase {
 
 	public void grind(String base) throws IOException {
 		File output = new File(base + "output");
-		for (File child : output.listFiles()) {
+		if (output.exists()) for (File child : output.listFiles()) {
 			child.delete();
+		} else {
+			output.mkdirs();
 		}
 		SiteGrinder.main(new String[] {base + "input",base + "output"});
 	}

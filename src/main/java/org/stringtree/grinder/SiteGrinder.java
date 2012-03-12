@@ -6,11 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import org.stringtree.Context;
+import org.rack4java.Context;
+import org.rack4java.context.MapContext;
 import org.stringtree.SystemContext;
 import org.stringtree.Tract;
 import org.stringtree.context.ConvertingContext;
-import org.stringtree.context.MapContext;
 import org.stringtree.converter.TemplateFileConverter;
 import org.stringtree.solomon.Session;
 import org.stringtree.solomon.Template;
@@ -76,7 +76,7 @@ public class SiteGrinder {
 		
 		File classdir = new File(srcdir, "_classes");
 		if (classdir.isDirectory()) {
-			context.put(SystemContext.SYSTEM_CLASSLOADER, new SmartPathClassLoader(classdir.getPath(), getClass().getClassLoader()));
+			context.with(SystemContext.SYSTEM_CLASSLOADER, new SmartPathClassLoader(classdir.getPath(), getClass().getClassLoader()));
 		}
 		
 		File spec = new File(srcdir, "_site.spec");
@@ -95,7 +95,7 @@ public class SiteGrinder {
 	
 	public static Template template(File file, String parent, String type, String body) {
 		Template template = template(parent, type, file.getName(), body);
-		template.put(FILE, file);
+		template.with(FILE, file);
 		return template;
 	}
 
@@ -105,18 +105,18 @@ public class SiteGrinder {
 		String key = dot > 0 ? name.substring(0, dot) : name;
 		if (!StringUtils.isBlank(parent)) key = parent + "/" + key;
 		
-		template.put(TYPE, type);
-		template.put(NAME, name);
-		template.put(PAGE_KEY, key);
-		template.put(PARENT, parent);
-		if (null != body) template.setBody(body);
+		template.with(TYPE, type);
+		template.with(NAME, name);
+		template.with(PAGE_KEY, key);
+		template.with(PARENT, parent);
+		if (null != body) template.withBody(body);
 
 		return template;
 	}
 	
 	public static Template folder(File file, String parent) {
 		Template ret = template(file, parent, TYPE_FOLDER, file.getName());
-		ret.setBody(file.getName());
+		ret.withBody(file.getName());
 		return ret;
 	}
 	
@@ -150,7 +150,7 @@ public class SiteGrinder {
 				load(file, child, parent, context);
 			} else if (name.endsWith(".page")) {
 				Template template = page(file, parent, context);
-				template.put(NAME, key + ".html");
+				template.with(NAME, key + ".html");
 				child.setValue(template);
 			} else {
 				Template template = binary(file, parent);

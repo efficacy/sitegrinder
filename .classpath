@@ -7,5 +7,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/emo"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/rack4java"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/rack4java-util"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

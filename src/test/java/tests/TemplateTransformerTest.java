@@ -2,9 +2,9 @@ package tests;
 
 import junit.framework.TestCase;
 
-import org.stringtree.Context;
+import org.rack4java.Context;
+import org.rack4java.context.MapContext;
 import org.stringtree.Tract;
-import org.stringtree.context.MapContext;
 import org.stringtree.grinder.SiteGrinder;
 import org.stringtree.grinder.TemplateTreeTransformVisitor;
 import org.stringtree.solomon.Session;
@@ -55,7 +55,7 @@ public class TemplateTransformerTest extends TestCase {
 	}
 	
 	public void testSimpleSubstitution() {
-		context.put("text", "Frank");
+		context.with("text", "Frank");
 		Template template = Helper.page("example ${text}");
 		from.setValue(template);
 		tttv.enter(from, to);
@@ -64,14 +64,14 @@ public class TemplateTransformerTest extends TestCase {
 	
 	public void testTractSubstitution() {
 		Template template = Helper.page("example ${text}");
-		template.put("text", "Frank");
+		template.with("text", "Frank");
 		from.setValue(template);
 		tttv.enter(from, to);
 		assertEquals("example Frank", to.getValue().getBodyAsString());
 	}
 	
 	public void testSubTemplate() {
-		templates.put("text", new Template("Margaret"));
+		templates.with("text", new Template("Margaret"));
 		from.setValue(Helper.page("example ${*text}"));
 		tttv.enter(from, to);
 		assertEquals("example Margaret", to.getValue().getBodyAsString());
@@ -79,8 +79,8 @@ public class TemplateTransformerTest extends TestCase {
 	
 	public void testSubTract() {
 		Template template = template("${name}", "name", "Katherine");
-		templates.put("text", template);
-		context.put("name", "Elizabeth");
+		templates.with("text", template);
+		context.with("name", "Elizabeth");
 		
 		from.setValue(Helper.page("${name} ${*text} ${name}"));
 		tttv.enter(from, to);
@@ -88,17 +88,17 @@ public class TemplateTransformerTest extends TestCase {
 	}
 	
 	public void testHeaderFooter() {
-		templates.put(TemplateTreeTransformVisitor.PAGE_PROLOGUE, new Template("Before["));
-		templates.put(TemplateTreeTransformVisitor.PAGE_EPILOGUE, new Template("]After"));
+		templates.with(TemplateTreeTransformVisitor.PAGE_PROLOGUE, new Template("Before["));
+		templates.with(TemplateTreeTransformVisitor.PAGE_EPILOGUE, new Template("]After"));
 		from.setValue(Helper.page("example text"));
 		tttv.enter(from, to);
 		assertEquals("Before[example text]After", to.getValue().getBodyAsString());
 	}
 	
 	public void testHeaderFooterSubstitution() {
-		templates.put(TemplateTreeTransformVisitor.PAGE_PROLOGUE, new Template("(title=${title})"));
+		templates.with(TemplateTreeTransformVisitor.PAGE_PROLOGUE, new Template("(title=${title})"));
 		Template template = Helper.page("example text");
-		template.put("title", "Home");
+		template.with("title", "Home");
 		from.setValue(template);
 		tttv.enter(from, to);
 		assertEquals("(title=Home)example text", to.getValue().getBodyAsString());
